@@ -15,6 +15,7 @@ const SignUpPage = () => {
   } = useForm({
     defaultValues: {
       role: "user",
+      plan: "free"
     },
   });
 
