@@ -1,6 +1,17 @@
+"use client";
+import { authClient } from "@/lib/auth-client";
+import Image from "next/image";
 import Link from "next/link";
 
 const Navbar = () => {
+  const { data: session } = authClient.useSession();
+  console.log(session);
+  const user = session?.user;
+
+  const handleSignOut = async() => {
+    await authClient.signOut();
+  }
+
   const listItems = (
     <>
       <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
@@ -50,10 +61,7 @@ const Navbar = () => {
               {listItems}
             </ul>
           </div>
-          <Link
-            href={"/"}
-            className="text-xl font-bold text-[#355dcb]"
-          >
+          <Link href={"/"} className="text-xl font-bold text-[#355dcb]">
             Digital Life Lessons
           </Link>
         </div>
@@ -61,42 +69,46 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{listItems}</ul>
         </div>
         <div className="navbar-end gap-4 items-center px-4">
-          <Link href={"/sign-up"}>
-            <button className="btn btn-outline bg-[#355dcb] text-white font-semibold">
-              Sign Up
-            </button>
-          </Link>
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
+          {user ? (
+            <div>
+              <div className="dropdown dropdown-end">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="btn btn-ghost btn-circle avatar"
+                >
+                  <div className="w-10 rounded-full">
+                    <Image src={user?.image} alt={user?.name} width={40} height={40} />
+                  </div>
+                </div>
+                <ul
+                  tabIndex="-1"
+                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                >
+                  <h1 className="text-lg font-semibold text-[#355dcb] p-2">
+                    {user?.name}
+                  </h1>
+                  <li>
+                    <Link href={"/"} className="justify-between">
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={"/"}>DashBoard</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleSignOut}>Logout</button>
+                  </li>
+                </ul>
               </div>
             </div>
-            <ul
-              tabIndex="-1"
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-            >
-              <h1 className="text-lg font-semibold text-[#355dcb] p-2">Name</h1>
-              <li>
-                <Link href={"/"} className="justify-between">
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link href={"/"}>DashBoard</Link>
-              </li>
-              <li>
-                <button>Logout</button>
-              </li>
-            </ul>
-          </div>
+          ) : (
+            <Link href={"/sign-up"}>
+              <button className="btn btn-outline bg-[#355dcb] text-white font-semibold">
+                Sign Up
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

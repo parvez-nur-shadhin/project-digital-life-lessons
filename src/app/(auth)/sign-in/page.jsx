@@ -2,38 +2,29 @@
 
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      role: "user",
-    },
-  });
+  } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data);
-    const { data: res, error } = await authClient.signUp.email({
-      name: data.name, // required
+    const { data: res, error } = await authClient.signIn.email({
       email: data.email, // required
       password: data.password, // required
-      image: data.image,
-      callbackURL: "/log-in",
+      rememberMe: true,
+      callbackURL: "/",
     });
 
-    if(res) {
-        toast.success("You've signed Up, redirecting to Login Page");
-        redirect('/sign-in');
-    }
-    else if(error) {
-        toast.info(error.message);
+    if (res) {
+      toast.success("You've signed in successfully");
+    } else if (error) {
+      toast.error(error.message);
     }
   };
 
@@ -45,17 +36,9 @@ const SignUpPage = () => {
             Join Digital Life Lessons
           </h1>
           <p className="text-center">
-            Your personal archive for growth, insights, and wisdom. Create your
-            free account today and never lose a life lesson.
+            Your personal archive for growth, insights, and wisdom. Login to
+            your account today and never lose a life lesson.
           </p>
-
-          <label className="label">Name</label>
-          <input
-            type="text"
-            className="input"
-            placeholder="Enter Your Name..."
-            {...register("name")}
-          />
 
           <label className="label">Email</label>
           <input
@@ -63,14 +46,6 @@ const SignUpPage = () => {
             className="input"
             placeholder="Enter Your Email..."
             {...register("email")}
-          />
-
-          <label className="label">Image</label>
-          <input
-            type="text"
-            className="input"
-            placeholder="Enter Your Photo URL..."
-            {...register("image")}
           />
 
           <div className="form-control">
@@ -108,7 +83,7 @@ const SignUpPage = () => {
             type="submit"
             className="btn btn-neutral bg-[#355dcb] text-white mt-4"
           >
-            Sign Up
+            Sign In
           </button>
           <h1 className="text-center text-lg font-bold">Or</h1>
           <button className="btn bg-white text-black border-[#e5e5e5]">
@@ -139,12 +114,12 @@ const SignUpPage = () => {
                 ></path>
               </g>
             </svg>
-            Sign Up with Google
+            Sign In with Google
           </button>
           <h1 className="mt-4">
-            Already Have an Account?{" "}
-            <Link href={"/sign-in"}>
-              <span className="text-[#355dcb] hover:underline">Sign In</span>
+            Don't Have an Account?{" "}
+            <Link href={"/sign-up"}>
+              <span className="text-[#355dcb] hover:underline">Sign Up</span>
             </Link>
           </h1>
         </fieldset>
@@ -153,4 +128,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default SignInPage;
