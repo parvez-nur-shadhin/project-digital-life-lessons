@@ -5,8 +5,8 @@ import { FaX } from "react-icons/fa6";
 
 const Footer = () => {
   return (
-    <div>
-      <footer className="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
+    <div className="mx-auto w-full">
+      <footer className="footer sm:footer-horizontal bg-base-200 text-base-content p-10 mx-auto">
         <nav>
           <h1 className="text-3xl font-bold text-[#355dcb] mb-5">
             Digital Life Lessons

@@ -1,22 +1,21 @@
 import Link from "next/link";
-import React from "react";
 
 const Navbar = () => {
   const listItems = (
     <>
-      <li>
+      <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>Home</Link>
       </li>
-      <li>
+      <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>Add Lesson</Link>
       </li>
-      <li>
+      <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>My Lessons</Link>
       </li>
-      <li>
+      <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>Lessons</Link>
       </li>
-      <li>
+      <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>Pricing / Upgrade</Link>
       </li>
     </>
@@ -51,15 +50,22 @@ const Navbar = () => {
               {listItems}
             </ul>
           </div>
-          <Link href={"/"} className="btn btn-ghost text-xl font-bold text-[#355dcb]">Digital Life Lessons</Link>
+          <Link
+            href={"/"}
+            className="text-xl font-bold text-[#355dcb]"
+          >
+            Digital Life Lessons
+          </Link>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">{listItems}</ul>
         </div>
         <div className="navbar-end gap-4 items-center px-4">
-            <Link href={'/'}>
-                <button className="btn btn-outline bg-[#355dcb] text-white font-semibold">Sign Up</button>
-            </Link>
+          <Link href={"/"}>
+            <button className="btn btn-outline bg-[#355dcb] text-white font-semibold">
+              Sign Up
+            </button>
+          </Link>
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
@@ -77,7 +83,7 @@ const Navbar = () => {
               tabIndex="-1"
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
-                <h1 className="text-lg font-semibold text-[#355dcb] p-2">Name</h1>
+              <h1 className="text-lg font-semibold text-[#355dcb] p-2">Name</h1>
               <li>
                 <Link href={"/"} className="justify-between">
                   Profile
