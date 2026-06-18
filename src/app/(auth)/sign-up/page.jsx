@@ -20,7 +20,6 @@ const SignUpPage = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
     const { data: res, error } = await authClient.signUp.email({
       name: data.name, // required
       email: data.email, // required

@@ -5,9 +5,8 @@ import Link from "next/link";
 
 const Navbar = () => {
   const { data: session } = authClient.useSession();
-  console.log(session);
   const user = session?.user;
-  console.log(user)
+
 
   const handleSignOut = async() => {
     await authClient.signOut();
@@ -19,7 +18,7 @@ const Navbar = () => {
         <Link href={"/"}>Home</Link>
       </li>
       <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
-        <Link href={"/"}>Add Lesson</Link>
+        <Link href={"/add-lessons"}>Add Lesson</Link>
       </li>
       <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>My Lessons</Link>
