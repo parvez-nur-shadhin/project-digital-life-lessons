@@ -26,7 +26,7 @@ const MyLessonCard = ({ lesson }) => {
           <span className="text-xs text-base-content/60 font-medium">
             Published: {formattedDate}
           </span>
-          {lesson.visibility?.toLowerCase() === "premium" ? (
+          {lesson.creatorPlan?.toLowerCase() === "premium" ? (
             <div className="badge badge-warning gap-1 text-xs font-bold p-3">
               <FaLock className="text-[10px]" /> Premium
             </div>

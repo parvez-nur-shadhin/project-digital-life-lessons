@@ -5,61 +5,51 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { FaPlus, FaFolderOpen, FaCompass } from "react-icons/fa";
 import MyLessonCard from "@/Component/MyLessons/MyLessonCard";
+import { gettingLessons } from "@/lib/actions/lessons";
+import { redirect } from "next/navigation";
 
 
 export default function MyLessonsPage() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
+  if(!user) {
+    redirect('/sign-up');
+  }
+
   const [myLessons, setMyLessons] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
-    // Only fetch if we have a logged-in user
+    const fetchAndFilterLessons = async () => {
+      try {
+        const allLessons = await gettingLessons();
+
+        // 1. PREVENT CRASH: Ensure allLessons is actually an array before filtering
+        const safeLessons = Array.isArray(allLessons) ? allLessons : [];
+
+        // 2. BULLETPROOF FILTER: Check by ID first, but fallback to Email just in case!
+        const filtered = safeLessons.filter(
+          (item) =>
+            item.creatorId === user?.id || item.creatorEmail === user?.email,
+        );
+
+        setMyLessons(filtered);
+      } catch (error) {
+        console.error("Failed to fetch lessons:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
     if (user) {
-      fetchMyLessons(user.email); // Or user.id, depending on your DB setup
-    }
-  }, [user]);
-
-  const fetchMyLessons = async (userEmail) => {
-    try {
-      // TODO: Replace this URL with your actual backend route!
-      // e.g., const res = await fetch(`http://localhost:5000/api/lessons/user/${userEmail}`);
-      // const data = await res.json();
-
-      // MOCK DATA FOR NOW:
-      const mockData = [
-        {
-          _id: "6a33d3971b98b9f7770f0f55",
-          title: "The silent power of quitting things that don't serve you",
-          description:
-            "We are wired to believe quitting is failing. I spent four years in a degree I hated because I didn't want to be a 'quitter'...",
-          visibility: "public",
-          createdAt: "2026-06-16T11:00:00.000+00:00",
-          likes: ["user1", "user2"],
-          savesCount: 5,
-        },
-        {
-          _id: "6a33d3971b98b9f7770f0f56",
-          title: "Why 'fake it till you make it' is terrible advice",
-          description:
-            "I started my first management job absolutely terrified, so I pretended I knew everything. I refused to ask questions...",
-          visibility: "premium",
-          createdAt: "2026-06-14T15:45:00.000+00:00",
-          likes: [],
-          savesCount: 0,
-        },
-      ];
-
-      setMyLessons(mockData);
-    } catch (error) {
-      console.error("Failed to fetch my lessons:", error);
-    } finally {
+      fetchAndFilterLessons();
+    } else if (!isPending) {
       setIsLoadingData(false);
     }
-  };
+  }, [user, isPending]);
 
-  // 1. Show global loading state while checking session
+  // 1. Show global loading state while checking session or fetching data
   if (isPending || (user && isLoadingData)) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center">
@@ -100,7 +90,7 @@ export default function MyLessonsPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 w-full max-w-sm mx-auto">
             <Link
-              href="/add-lesson"
+              href="/add-lessons"
               className="btn btn-primary flex-1 gap-2 shadow-lg"
             >
               <FaPlus /> Create Lesson
