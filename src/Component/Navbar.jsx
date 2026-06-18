@@ -21,10 +21,10 @@ const Navbar = () => {
         <Link href={"/add-lessons"}>Add Lesson</Link>
       </li>
       <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
-        <Link href={"/"}>My Lessons</Link>
+        <Link href={"/my-lessons"}>My Lessons</Link>
       </li>
       <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
-        <Link href={"/"}>Lessons</Link>
+        <Link href={"/lessons"}>Lessons</Link>
       </li>
       <li className={`hover:bg-[#355dcb] rounded-md font-semibold hover:text-white ${user?.plan === "premium" ? "hidden" : "block"}`}>
         <Link href={"/pricing-plan"}>Pricing / Upgrade</Link>

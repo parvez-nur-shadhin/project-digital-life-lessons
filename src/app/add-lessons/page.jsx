@@ -37,6 +37,7 @@ const AddLessonPage = () => {
       ...data,
       creatorName: user?.name,
       creatorId: user?.id,
+      creatorPlan: user?.plan,
       creatorProfileImage: user?.image,
       creatorEmail: user?.email, // Good to have for database references
       visibility: "public",
