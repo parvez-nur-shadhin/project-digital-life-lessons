@@ -28,6 +28,17 @@ const SignInPage = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    // This single line handles the entire Google redirect!
+    await authClient.signIn.social({
+      provider: "google",
+    });
+
+    if (error) {
+      console.error("Google login failed:", error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen flex justify-center items-center">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -86,7 +97,10 @@ const SignInPage = () => {
             Sign In
           </button>
           <h1 className="text-center text-lg font-bold">Or</h1>
-          <button className="btn bg-white text-black border-[#e5e5e5]">
+          <button
+            onClick={handleGoogleLogin}
+            className="btn bg-white text-black border-[#e5e5e5]"
+          >
             <svg
               aria-label="Google logo"
               width="16"

@@ -140,7 +140,7 @@ const SignUpPage = () => {
                 ></path>
               </g>
             </svg>
-            Sign Up with Google
+            Sign In with Google
           </button>
           <h1 className="mt-4">
             Already Have an Account?{" "}
