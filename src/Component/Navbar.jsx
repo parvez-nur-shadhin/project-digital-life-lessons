@@ -7,6 +7,7 @@ const Navbar = () => {
   const { data: session } = authClient.useSession();
   console.log(session);
   const user = session?.user;
+  console.log(user)
 
   const handleSignOut = async() => {
     await authClient.signOut();
@@ -26,7 +27,7 @@ const Navbar = () => {
       <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
         <Link href={"/"}>Lessons</Link>
       </li>
-      <li className="hover:bg-[#355dcb] rounded-md font-semibold hover:text-white">
+      <li className={`hover:bg-[#355dcb] rounded-md font-semibold hover:text-white ${user?.plan === "premium" ? "hidden" : "block"}`}>
         <Link href={"/pricing-plan"}>Pricing / Upgrade</Link>
       </li>
     </>
@@ -70,7 +71,8 @@ const Navbar = () => {
         </div>
         <div className="navbar-end gap-4 items-center px-4">
           {user ? (
-            <div>
+            <div className="flex gap-5 items-center">
+              <button className={`btn btn-info ${user?.plan === "premium" ? "block" : "hidden"} text-white font-bold rounded-2xl`}>Premium</button>
               <div className="dropdown dropdown-end">
                 <div
                   tabIndex={0}
