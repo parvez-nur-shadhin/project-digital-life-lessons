@@ -19,23 +19,16 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
   const [lessons, setLessons] = useState(initialLessons);
   const [lessonToDelete, setLessonToDelete] = useState(null);
 
-  // --- HANDLERS ---
-
   const handleToggleVisibility = async (id, currentVisibility) => {
-    // Determine new state (Assuming your DB uses a boolean or string for this)
     const newVisibility =
       currentVisibility === "private" ? "public" : "private";
 
-    // Optimistic UI Update
     setLessons(
       lessons.map((l) =>
         l._id === id ? { ...l, visibilityStatus: newVisibility } : l,
       ),
     );
     toast.success(`Lesson marked as ${newVisibility}`);
-
-    // TODO: Call your backend to save this change
-    // await fetch(`/api/lessons/${id}/visibility`, { method: "PATCH", body: JSON.stringify({ visibilityStatus: newVisibility }) });
   };
 
   const handleToggleAccess = async (id, currentAccess) => {
@@ -48,14 +41,11 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
       lessons.map((l) => (l._id === id ? { ...l, accessLevel: newAccess } : l)),
     );
     toast.success(`Access changed to ${newAccess}`);
-
-    // TODO: Call backend
   };
 
   const confirmDelete = async () => {
     if (!lessonToDelete) return;
 
-    // Optimistic UI Update
     setLessons(lessons.filter((l) => l._id !== lessonToDelete._id));
     toast.success("Lesson deleted successfully");
 
@@ -67,7 +57,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
   return (
     <div className="overflow-x-auto bg-base-100 rounded-box border border-base-200 shadow-sm">
       <table className="table table-zebra w-full">
-        {/* Head */}
         <thead className="bg-base-200 text-base-content">
           <tr>
             <th>Lesson Details</th>
@@ -78,10 +67,8 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
           </tr>
         </thead>
 
-        {/* Body */}
         <tbody>
           {lessons.map((lesson) => {
-            // Safe fallbacks for data
             const likes = lesson.likes?.length || 0;
             const saves = lesson.savesCount || 0;
             const date = new Date(lesson.createdAt).toLocaleDateString(
@@ -95,7 +82,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
 
             return (
               <tr key={lesson._id}>
-                {/* 1. Details Column */}
                 <td>
                   <div
                     className="font-bold text-base-content line-clamp-1 max-w-xs"
@@ -111,7 +97,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
                   </div>
                 </td>
 
-                {/* 2. Stats Column */}
                 <td>
                   <div className="flex gap-3 text-sm font-medium text-base-content/70">
                     <span className="flex items-center gap-1">
@@ -123,7 +108,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
                   </div>
                 </td>
 
-                {/* 3. Visibility Toggle (Public / Private) */}
                 <td>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold w-12">
@@ -143,7 +127,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
                   </div>
                 </td>
 
-                {/* 4. Access Level Toggle (Free / Premium) */}
                 <td>
                   <div
                     className={`flex items-center gap-2 ${!isPremium ? "tooltip tooltip-left" : ""}`}
@@ -170,7 +153,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
                   </div>
                 </td>
 
-                {/* 5. Actions Column */}
                 <td className="text-right">
                   <div className="flex justify-end gap-2">
                     <Link
@@ -205,7 +187,6 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
         </tbody>
       </table>
 
-      {/* Delete Confirmation Modal */}
       <dialog id="delete_modal" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg text-error flex items-center gap-2">

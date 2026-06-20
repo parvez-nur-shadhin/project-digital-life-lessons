@@ -6,3 +6,29 @@ export const getUsers = async () => {
   const res = await fetch(`${baseUrl}/api/user`);
   return res.json();
 };
+
+export const updateUserRole = async (id, newRole) => {
+  try {
+    const res = await fetch(`${baseUrl}/api/user/${id}/role`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: newRole }),
+    });
+    if (!res.ok) return { error: "Failed to update role" };
+    return await res.json();
+  } catch (error) {
+    return { error: "Server connection failed" };
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    const res = await fetch(`${baseUrl}/api/user/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) return { error: "Failed to delete user" };
+    return await res.json();
+  } catch (error) {
+    return { error: "Server connection failed" };
+  }
+};

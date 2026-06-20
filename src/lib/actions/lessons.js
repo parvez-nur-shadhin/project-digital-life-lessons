@@ -26,7 +26,7 @@ export const getLessonById = async (id) => {
 export const updateLesson = async (id, updatedData) => {
   try {
     const res = await fetch(`${baseUrl}/api/lessons/${id}`, {
-      method: "PUT", // or PATCH depending on your Express backend
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData),
     });
@@ -45,5 +45,5 @@ export const deleteLesson = async (id) => {
 };
 
 export const addFavoriteLesson = async (lesson) => {
-  return serverMutation('/api/favorites', lesson);
-}
+  return serverMutation("/api/favorites", lesson);
+};
