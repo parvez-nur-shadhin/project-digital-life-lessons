@@ -12,7 +12,7 @@ import {
   FaFolderOpen,
   FaSpinner,
 } from "react-icons/fa";
-// NOTE: Using the standard LessonCard from your homepage, NOT the MyLessonCard!
+
 import LessonCard from "@/Component/Lessons/LessonCard";
 import { gettingLessons } from "@/lib/actions/lessons";
 import toast from "react-hot-toast";
@@ -35,7 +35,6 @@ export default function ProfilePage() {
 
   const isPremium = user?.plan === "premium";
 
-  // Pre-fill the edit form when user data loads
   useEffect(() => {
     if (user) {
       setEditName(user.name || "");
@@ -43,22 +42,18 @@ export default function ProfilePage() {
     }
   }, [user]);
 
-  // Fetch Lessons Data
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const allLessons = await gettingLessons();
         const safeLessons = Array.isArray(allLessons) ? allLessons : [];
 
-        // 1. Get ALL lessons created by this user to get their total count
         const allMyLessons = safeLessons.filter(
           (item) =>
             item.creatorId === user?.id || item.creatorEmail === user?.email,
         );
         setTotalCreated(allMyLessons.length);
 
-        // 2. Filter down to ONLY PUBLIC/PREMIUM lessons for the display grid
-        // (We don't want to show private lessons on a public-facing profile style page)
         const publicOnly = allMyLessons
           .filter(
             (item) =>
@@ -69,7 +64,6 @@ export default function ProfilePage() {
 
         setPublicLessons(publicOnly);
 
-        // NOTE: Placeholder for favorites count. Fetch user's actual saves here later!
         setTotalSaved(0);
       } catch (error) {
         console.error("Failed to fetch profile data:", error);
@@ -85,14 +79,12 @@ export default function ProfilePage() {
     }
   }, [user, isPending]);
 
-  // Handle Profile Update via better-auth
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     if (!editName.trim()) return toast.error("Name cannot be empty");
 
     setIsUpdating(true);
     try {
-      // Update via Better Auth client
       await authClient.updateUser({
         name: editName,
         image: editImage,
@@ -101,7 +93,6 @@ export default function ProfilePage() {
       toast.success("Profile updated successfully!");
       document.getElementById("edit_profile_modal").close();
 
-      // Force a hard refresh to update the layout Navbar/Sidebar avatars
       window.location.reload();
     } catch (error) {
       toast.error("Failed to update profile");
@@ -111,7 +102,6 @@ export default function ProfilePage() {
     }
   };
 
-  // 1. Loading State
   if (isPending || (user && isLoading)) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -120,7 +110,6 @@ export default function ProfilePage() {
     );
   }
 
-  // 2. Access Denied State
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -135,7 +124,6 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-6xl mx-auto pb-12">
-      {/* --- PROFILE HEADER CARD --- */}
       <div className="card bg-base-100 shadow-sm border border-base-200 mb-12">
         <div className="card-body p-6 md:p-10 flex flex-col md:flex-row items-center gap-8">
           {/* Avatar Area */}
@@ -143,7 +131,12 @@ export default function ProfilePage() {
             <div className="avatar">
               <div className="w-32 rounded-full ring ring-base-200 ring-offset-base-100 ring-offset-4 shadow-xl">
                 {user.image ? (
-                  <Image src={user.image} alt={user.name} height={100} width={100} />
+                  <Image
+                    src={user.image}
+                    alt={user.name}
+                    height={100}
+                    width={100}
+                  />
                 ) : (
                   <div className="bg-primary text-primary-content flex items-center justify-center w-full h-full text-5xl font-bold uppercase">
                     {user.name?.charAt(0) || "U"}
@@ -158,7 +151,6 @@ export default function ProfilePage() {
             )}
           </div>
 
-          {/* User Info */}
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl font-black text-base-content mb-1">
               {user.name}
@@ -167,7 +159,6 @@ export default function ProfilePage() {
               <FaEnvelope /> {user.email}
             </p>
 
-            {/* Stats Row */}
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
               <div className="flex items-center gap-2 bg-base-200 px-4 py-2 rounded-lg">
                 <FaBookOpen className="text-primary" />
@@ -188,7 +179,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Edit Button */}
           <div className="mt-4 md:mt-0">
             <button
               onClick={() =>
@@ -203,7 +193,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* --- PUBLIC PORTFOLIO SECTION --- */}
       <div className="mb-6 border-b border-base-200 pb-4">
         <h2 className="text-2xl font-bold text-base-content">
           My Public Portfolio
@@ -220,7 +209,6 @@ export default function ProfilePage() {
           ))}
         </div>
       ) : (
-        /* Empty State */
         <div className="text-center py-20 bg-base-100 rounded-box border border-base-200 shadow-sm">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center">
@@ -237,7 +225,6 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* --- EDIT PROFILE MODAL --- */}
       <dialog id="edit_profile_modal" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
@@ -245,7 +232,6 @@ export default function ProfilePage() {
           </h3>
 
           <form onSubmit={handleUpdateProfile} className="space-y-4">
-            {/* Read-Only Email */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-semibold">Email Address</span>
@@ -261,7 +247,6 @@ export default function ProfilePage() {
               </label>
             </div>
 
-            {/* Display Name */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-semibold">Display Name</span>
@@ -275,7 +260,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Profile Image URL */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-semibold">
@@ -291,7 +275,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Action Buttons */}
             <div className="modal-action mt-6">
               <button
                 type="button"

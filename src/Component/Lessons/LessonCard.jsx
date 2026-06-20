@@ -1,8 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { FaArrowRight, FaLock, FaGlobeAmericas } from "react-icons/fa";
-import { gettingSession } from "@/lib/Core/session";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 
 const LessonCard = ({ lesson }) => {
@@ -15,7 +13,6 @@ const LessonCard = ({ lesson }) => {
   return (
     <div className="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
       <div className="card-body p-5 flex flex-col flex-grow">
-        {/* 1. Top Row: Creator Info & Access Level */}
         <div className="flex justify-between items-start mb-3 gap-2">
           <div className="flex items-center gap-3">
             <div className="avatar">
@@ -44,7 +41,6 @@ const LessonCard = ({ lesson }) => {
             </div>
           </div>
 
-          {/* Access Level Badge */}
           {lesson.visibility?.toLowerCase() === "premium" ? (
             <div className="badge badge-warning gap-1 text-xs font-bold shadow-sm p-3 py-4">
               <FaLock className="text-[10px]" /> Premium
@@ -56,7 +52,6 @@ const LessonCard = ({ lesson }) => {
           )}
         </div>
 
-        {/* 2. Title & Short Description */}
         <h2
           className="card-title text-xl font-extrabold leading-tight line-clamp-2 mt-2"
           title={lesson.title}
@@ -70,7 +65,6 @@ const LessonCard = ({ lesson }) => {
           {lesson.description}
         </p>
 
-        {/* 3. Category & Tone Badges */}
         <div className="flex flex-wrap gap-2 mt-4 mb-4">
           <div className="badge badge-primary badge-sm font-semibold p-3">
             {lesson.category}
@@ -80,7 +74,6 @@ const LessonCard = ({ lesson }) => {
           </div>
         </div>
 
-        {/* 4. Action Button */}
         <div className="card-actions w-full mt-auto pt-2 border-t border-base-200">
           <Link
             href={`/lessons/${lesson._id}`}

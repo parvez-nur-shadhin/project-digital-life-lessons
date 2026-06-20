@@ -14,23 +14,21 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Link from "next/link";
-// Make sure to export these two functions from your lessons actions file!
+
 import { getLessonById, updateLesson } from "@/lib/actions/lessons";
 
 export default function EditLessonPage() {
   const router = useRouter();
   const params = useParams();
-  const lessonId = params.id; // Get the ID from the URL
+  const lessonId = params.id;
 
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  // Check subscription status
   const isPremium = user?.plan === "premium";
 
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Initialize React Hook Form
   const {
     register,
     handleSubmit,
@@ -48,7 +46,6 @@ export default function EditLessonPage() {
     },
   });
 
-  // Fetch the existing lesson data
   useEffect(() => {
     const fetchExistingLesson = async () => {
       try {
@@ -60,7 +57,6 @@ export default function EditLessonPage() {
           return;
         }
 
-        // Security Check: Make sure the logged-in user actually owns this lesson!
         if (
           lesson.creatorId !== user?.id &&
           lesson.creatorEmail !== user?.email
@@ -70,7 +66,6 @@ export default function EditLessonPage() {
           return;
         }
 
-        // Populate the form with the fetched data
         reset({
           title: lesson.title,
           description: lesson.description,
@@ -92,7 +87,6 @@ export default function EditLessonPage() {
     }
   }, [user, lessonId, reset, router]);
 
-  // Force visibility to public if the user is not premium
   useEffect(() => {
     if (user && !isPremium) {
       setValue("visibility", "public");
@@ -106,7 +100,6 @@ export default function EditLessonPage() {
         visibility: isPremium ? data.visibility : "public",
       };
 
-      // Call your backend Server Action to update
       const res = await updateLesson(lessonId, updatedData);
 
       if (!res || res.error) {
@@ -122,7 +115,6 @@ export default function EditLessonPage() {
     }
   };
 
-  // Loading States
   if (isPending || isLoadingData) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -131,7 +123,6 @@ export default function EditLessonPage() {
     );
   }
 
-  // Access Denied
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -147,7 +138,6 @@ export default function EditLessonPage() {
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="max-w-4xl mx-auto w-full pb-12">
-        {/* Header */}
         <div className="mb-8 mt-4">
           <Link
             href="/dashboard/my-lessons"
@@ -164,11 +154,9 @@ export default function EditLessonPage() {
           </p>
         </div>
 
-        {/* Main Form Card */}
         <div className="card bg-base-100 shadow-xl border border-base-200">
           <div className="card-body p-6 md:p-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Title */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content">
@@ -190,7 +178,6 @@ export default function EditLessonPage() {
                 )}
               </div>
 
-              {/* Description / Story */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content">
@@ -212,7 +199,6 @@ export default function EditLessonPage() {
                 )}
               </div>
 
-              {/* Grid for Dropdowns */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="form-control w-full">
                   <label className="label">
@@ -250,7 +236,6 @@ export default function EditLessonPage() {
                 </div>
               </div>
 
-              {/* Image (Optional) */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content flex items-center gap-2">
@@ -266,7 +251,6 @@ export default function EditLessonPage() {
                 />
               </div>
 
-              {/* Access Level */}
               <div className="form-control w-full md:w-1/2 pt-2">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content">
@@ -310,7 +294,6 @@ export default function EditLessonPage() {
                 </label>
               </div>
 
-              {/* Submit Button */}
               <div className="form-control mt-8 pt-6 border-t border-base-200">
                 <button
                   type="submit"

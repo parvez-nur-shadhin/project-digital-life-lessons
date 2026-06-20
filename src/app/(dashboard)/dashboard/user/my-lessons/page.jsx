@@ -15,7 +15,6 @@ export default function MyLessonsPage() {
   const [myLessons, setMyLessons] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check subscription status for the table permissions
   const isPremium = user?.plan === "premium";
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export default function MyLessonsPage() {
         const allLessons = await gettingLessons();
         const safeLessons = Array.isArray(allLessons) ? allLessons : [];
 
-        // Filter for this specific user and sort by newest
+     
         const filtered = safeLessons
           .filter(
             (item) =>
@@ -47,7 +46,7 @@ export default function MyLessonsPage() {
     }
   }, [user, isPending]);
 
-  // 1. Loading State
+
   if (isPending || (user && isLoading)) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -56,7 +55,7 @@ export default function MyLessonsPage() {
     );
   }
 
-  // 2. Access Denied
+ 
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -89,11 +88,11 @@ export default function MyLessonsPage() {
         </Link>
       </div>
 
-      {/* Main Content Area */}
+
       {myLessons.length > 0 ? (
         <MyLessonsTable initialLessons={myLessons} isPremium={isPremium} />
       ) : (
-        /* Empty State */
+
         <div className="card w-full bg-base-100 shadow-sm border border-base-200 text-center py-16 px-6">
           <div className="flex justify-center mb-6">
             <div className="w-24 h-24 bg-base-200 rounded-full flex items-center justify-center border-8 border-base-100 shadow-sm">

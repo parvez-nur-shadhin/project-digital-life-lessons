@@ -21,9 +21,9 @@ const SignUpPage = () => {
 
   const onSubmit = async (data) => {
     const { data: res, error } = await authClient.signUp.email({
-      name: data.name, // required
-      email: data.email, // required
-      password: data.password, // required
+      name: data.name, 
+      email: data.email, 
+      password: data.password, 
       image: data.image,
       callbackURL: "/log-in",
     });

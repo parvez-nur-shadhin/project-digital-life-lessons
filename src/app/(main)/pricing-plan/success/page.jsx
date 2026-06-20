@@ -9,8 +9,6 @@ export default async function SuccessPage() {
   const user = session?.user;
   const plan = "premium";
 
-  // Static or state-based transaction details
-  // (Since we removed the server-side Stripe fetch)
   const transaction = {
     id: "TXN-9876543210",
     email: user.email,
@@ -42,7 +40,6 @@ export default async function SuccessPage() {
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
       <div className="card w-full max-w-lg bg-base-100 shadow-2xl border-t-8 border-success">
         <div className="card-body items-center text-center">
-          {/* Success Icon */}
           <div className="mb-4 text-success">
             <FaCheckCircle className="text-7xl drop-shadow-sm" />
           </div>
@@ -56,7 +53,6 @@ export default async function SuccessPage() {
             is now active.
           </p>
 
-          {/* Transaction Receipt Details */}
           <div className="bg-base-200/50 rounded-box p-5 w-full text-left space-y-4 mb-8 border border-base-300">
             <div className="flex justify-between items-center border-b border-base-300 pb-3">
               <span className="text-base-content/70 font-medium">
@@ -85,7 +81,6 @@ export default async function SuccessPage() {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="w-full flex flex-col sm:flex-row gap-3">
             <Link href="/dashboard" className="btn btn-primary flex-1 gap-2">
               Go to Dashboard <FaArrowRight />

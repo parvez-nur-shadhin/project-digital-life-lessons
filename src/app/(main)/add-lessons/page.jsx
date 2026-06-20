@@ -8,13 +8,11 @@ import { useForm } from "react-hook-form";
 import { FaBookOpen, FaSave } from "react-icons/fa";
 
 const AddLessonPage = () => {
-  // 1. Extract isPending so we can show a loading state
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 2. Only initialize the fields the user actually types into
   const {
     register,
     handleSubmit,
@@ -33,23 +31,21 @@ const AddLessonPage = () => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
 
-    // 3. Merge the form data with the user's background data right before sending
     const finalPayload = {
       ...data,
       creatorName: user?.name,
       creatorId: user?.id,
       creatorPlan: user?.plan,
       creatorProfileImage: user?.image,
-      creatorEmail: user?.email, // Good to have for database references
+      creatorEmail: user?.email,
       visibility: "public",
     };
 
     console.log("Saving this to database:", finalPayload);
 
-    setTimeout(async() => {
-      // e.g., await serverMutation('/api/lessons', finalPayload, 'POST');
+    setTimeout(async () => {
       const res = await addLessons(finalPayload);
-      console.log(res)
+      console.log(res);
 
       alert("Lesson Saved Successfully!");
       setIsSubmitting(false);
@@ -57,7 +53,6 @@ const AddLessonPage = () => {
     }, 1500);
   };
 
-  // 4. Prevent the form from rendering until we know who the user is
   if (isPending) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center">
@@ -66,10 +61,8 @@ const AddLessonPage = () => {
     );
   }
 
-  // 5. Optional: If they aren't logged in, don't let them see the form
   if (!user) {
-    redirect('/sign-up');
-    
+    redirect("/sign-up");
   }
 
   return (
@@ -89,7 +82,6 @@ const AddLessonPage = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* 1. Lesson Title */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text font-semibold">Lesson Title</span>
@@ -113,7 +105,6 @@ const AddLessonPage = () => {
               )}
             </div>
 
-            {/* 2. Full Description / Story */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text font-semibold">
@@ -140,7 +131,6 @@ const AddLessonPage = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* 3. Category */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold">Category</span>
@@ -167,7 +157,6 @@ const AddLessonPage = () => {
                 )}
               </div>
 
-              {/* 4. Emotional Tone */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold">
@@ -196,7 +185,6 @@ const AddLessonPage = () => {
               </div>
             </div>
 
-            {/* 5. Featured Image */}
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text font-semibold">
@@ -214,7 +202,6 @@ const AddLessonPage = () => {
               />
             </div>
 
-            {/* Submit Button */}
             <div className="form-control mt-6">
               <button
                 type="submit"

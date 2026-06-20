@@ -2,7 +2,6 @@ import React from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 
 const PricingTable = () => {
-  // Keeping the data in an array makes the table much easier to read and edit
   const features = [
     {
       name: "Number of lessons that can be created",
@@ -35,13 +34,12 @@ const PricingTable = () => {
       premium: true,
     },
     {
-      name: "Advanced analytics and insights", // Extra row to hit the 6-8 requirement
+      name: "Advanced analytics and insights",
       free: false,
       premium: true,
     },
   ];
 
-  // Helper function to render table cells cleanly
   const renderCell = (value) => {
     if (typeof value === "string") {
       return <span className="font-medium text-base-content">{value}</span>;
@@ -68,7 +66,6 @@ const PricingTable = () => {
       <div className="card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full text-center">
-            {/* Table Header */}
             <thead>
               <tr className="bg-base-200/50 text-lg">
                 <th className="text-left w-1/2 p-6 font-bold text-base-content">
@@ -97,7 +94,11 @@ const PricingTable = () => {
                         / one-time
                       </span>
                     </span>
-                    <form action="/api/checkout_sessions" className="btn btn-primary btn-sm mt-2 w-full max-w-[120px]" method="POST">
+                    <form
+                      action="/api/checkout_sessions"
+                      className="btn btn-primary btn-sm mt-2 w-full max-w-[120px]"
+                      method="POST"
+                    >
                       <section>
                         <button type="submit" role="link">
                           Upgrade Now
@@ -109,7 +110,6 @@ const PricingTable = () => {
               </tr>
             </thead>
 
-            {/* Table Body */}
             <tbody>
               {features.map((feature, index) => (
                 <tr key={index} className="hover">

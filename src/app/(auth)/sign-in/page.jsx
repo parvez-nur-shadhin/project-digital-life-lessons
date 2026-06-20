@@ -15,8 +15,8 @@ const SignInPage = () => {
 
   const onSubmit = async (data) => {
     const { data: res, error } = await authClient.signIn.email({
-      email: data.email, // required
-      password: data.password, // required
+      email: data.email, 
+      password: data.password, 
       rememberMe: true,
       callbackURL: "/",
     });
@@ -29,7 +29,6 @@ const SignInPage = () => {
   };
 
   const handleGoogleLogin = async () => {
-    // This single line handles the entire Google redirect!
     await authClient.signIn.social({
       provider: "google",
     });

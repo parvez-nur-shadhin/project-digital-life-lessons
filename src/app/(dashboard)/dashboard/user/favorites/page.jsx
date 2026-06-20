@@ -5,7 +5,6 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { FaBookmark, FaEye, FaHeartBroken, FaSearch } from "react-icons/fa";
 import toast from "react-hot-toast";
-// We will create these actions in the next step!
 import { getFavorites, removeFavorite } from "@/lib/actions/favorites";
 import Image from "next/image";
 
@@ -13,20 +12,16 @@ export default function MyFavoritesPage() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  // States
   const [favorites, setFavorites] = useState([]);
   const [filteredFavorites, setFilteredFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filter States
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [toneFilter, setToneFilter] = useState("All");
 
-  // Fetch Favorites on Load
   useEffect(() => {
     const fetchMyFavorites = async () => {
       try {
-        // Fetch the user's saved lessons from your backend
         const myFavourites = await getFavorites();
         console.log(myFavourites);
         const myFavs = myFavourites.filter(
@@ -52,7 +47,6 @@ export default function MyFavoritesPage() {
 
   console.log(favorites);
 
-  // Handle Real-Time Filtering
   useEffect(() => {
     let result = favorites;
 
@@ -66,12 +60,9 @@ export default function MyFavoritesPage() {
     setFilteredFavorites(result);
   }, [categoryFilter, toneFilter, favorites]);
 
-  // Handle Removing from Favorites
   const handleRemoveFavorite = async (id) => {
-    // 1. Save backup for rollback
     const previousFavorites = [...favorites];
 
-    // 2. Optimistic UI Update: Remove it instantly
     setFavorites(favorites.filter((lesson) => lesson._id !== id));
     toast.success("Removed from favorites");
 
@@ -82,12 +73,11 @@ export default function MyFavoritesPage() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to remove. Restoring lesson.");
-      // Rollback if the server fails
+
       setFavorites(previousFavorites);
     }
   };
 
-  // --- Loading State ---
   if (isPending || (user && isLoading)) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -96,7 +86,6 @@ export default function MyFavoritesPage() {
     );
   }
 
-  // --- Access Denied ---
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -111,7 +100,6 @@ export default function MyFavoritesPage() {
 
   return (
     <div className="max-w-7xl mx-auto pb-12">
-      {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-base-content flex items-center gap-3 mb-2">
           <FaBookmark className="text-primary" />
@@ -122,7 +110,6 @@ export default function MyFavoritesPage() {
         </p>
       </div>
 
-      {/* Filtering Section */}
       {favorites.length > 0 && (
         <div className="flex flex-col md:flex-row gap-4 mb-8 bg-base-200 p-4 rounded-xl border border-base-300">
           <div className="flex items-center gap-2 font-bold text-base-content/70 px-2">
@@ -156,7 +143,6 @@ export default function MyFavoritesPage() {
         </div>
       )}
 
-      {/* Main Table Area */}
       {favorites.length > 0 ? (
         filteredFavorites.length > 0 ? (
           <div className="overflow-x-auto bg-base-100 rounded-box border border-base-200 shadow-sm">
@@ -218,7 +204,7 @@ export default function MyFavoritesPage() {
                         >
                           <FaEye className="text-lg" />
                         </Link>
-              
+
                         <button
                           onClick={() => handleRemoveFavorite(lesson._id)}
                           className="btn btn-sm btn-square btn-ghost text-base-content/40 hover:text-error"
@@ -234,7 +220,6 @@ export default function MyFavoritesPage() {
             </table>
           </div>
         ) : (
-          /* State when filters hide all results */
           <div className="text-center py-12 bg-base-100 border border-base-200 rounded-xl">
             <p className="text-base-content/60 font-medium">
               No saved lessons match your current filters.
@@ -251,7 +236,6 @@ export default function MyFavoritesPage() {
           </div>
         )
       ) : (
-        /* Empty State (User has no favorites at all) */
         <div className="card w-full bg-base-100 shadow-sm border border-base-200 text-center py-16 px-6">
           <div className="flex justify-center mb-6">
             <div className="w-24 h-24 bg-base-200 rounded-full flex items-center justify-center border-8 border-base-100 shadow-sm">

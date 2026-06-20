@@ -12,7 +12,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 
-export default function DashboardSideBar({ children }) {
+export default function AdminSidebar({ children }) {
   const pathname = usePathname();
 
   const isActive = (path) => pathname === path;
@@ -20,29 +20,25 @@ export default function DashboardSideBar({ children }) {
   const navLinks = [
     {
       name: "Dashboard Home",
-      href: "/dashboard/user",
+      href: "/admin-dashboard",
       icon: <FaHome className="text-lg" />,
     },
     {
-      name: "Add Lesson",
-      href: "/dashboard/user/add-lesson",
+      name: "Manage Users",
+      href: "/admin-dashboard/manage-users",
       icon: <FaPlus className="text-lg" />,
     },
     {
-      name: "My Lessons",
-      href: "/dashboard/user/my-lessons",
+      name: "Reported / Flagged Lessons",
+      href: "/admin-dashboard/reported-lessons",
       icon: <FaBookOpen className="text-lg" />,
     },
     {
-      name: "My Favorites",
-      href: "/dashboard/user/favorites",
-      icon: <FaBookmark className="text-lg" />,
-    },
-    {
-      name: "Profile",
-      href: "/dashboard/user/profile",
+      name: "Admin Profile",
+      href: "/admin-dashboard/profile",
       icon: <FaUser className="text-lg" />,
     },
+
   ];
 
   return (

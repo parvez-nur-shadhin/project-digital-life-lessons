@@ -8,13 +8,12 @@ import MyLessonCard from "@/Component/MyLessons/MyLessonCard";
 import { gettingLessons } from "@/lib/actions/lessons";
 import { redirect } from "next/navigation";
 
-
 export default function MyLessonsPage() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  if(!user) {
-    redirect('/sign-up');
+  if (!user) {
+    redirect("/sign-up");
   }
 
   const [myLessons, setMyLessons] = useState([]);
@@ -25,10 +24,8 @@ export default function MyLessonsPage() {
       try {
         const allLessons = await gettingLessons();
 
-        // 1. PREVENT CRASH: Ensure allLessons is actually an array before filtering
         const safeLessons = Array.isArray(allLessons) ? allLessons : [];
 
-        // 2. BULLETPROOF FILTER: Check by ID first, but fallback to Email just in case!
         const filtered = safeLessons.filter(
           (item) =>
             item.creatorId === user?.id || item.creatorEmail === user?.email,
@@ -49,7 +46,6 @@ export default function MyLessonsPage() {
     }
   }, [user, isPending]);
 
-  // 1. Show global loading state while checking session or fetching data
   if (isPending || (user && isLoadingData)) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center">
@@ -58,7 +54,6 @@ export default function MyLessonsPage() {
     );
   }
 
-  // 2. Access Denied if not logged in
   if (!user) {
     return (
       <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
@@ -71,7 +66,6 @@ export default function MyLessonsPage() {
     );
   }
 
-  // 3. Empty State (No Lessons Found)
   if (myLessons.length === 0) {
     return (
       <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center p-4">
@@ -107,11 +101,9 @@ export default function MyLessonsPage() {
     );
   }
 
-  // 4. Main Dashboard UI
   return (
     <div className="min-h-screen bg-base-200 py-12 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
           <div>
             <h1 className="text-4xl font-bold text-base-content mb-2">
@@ -126,7 +118,6 @@ export default function MyLessonsPage() {
           </Link>
         </div>
 
-        {/* The Grid Map Loop */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {myLessons.map((lesson) => (
             <MyLessonCard key={lesson._id} lesson={lesson} />

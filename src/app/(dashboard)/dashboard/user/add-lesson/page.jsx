@@ -19,10 +19,8 @@ export default function AddLessonPage() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  // Check subscription status
   const isPremium = user?.plan === "premium";
 
-  // Initialize React Hook Form
   const {
     register,
     handleSubmit,
@@ -39,26 +37,23 @@ export default function AddLessonPage() {
     },
   });
 
-  // Force visibility to public if the user is not premium
   useEffect(() => {
     if (user && !isPremium) {
       setValue("visibility", "public");
     }
   }, [user, isPremium, setValue]);
 
-  // React Hook Form handles the e.preventDefault() automatically
   const onSubmit = async (data) => {
     try {
-      // Construct the final object combining form data and user data
       const newLesson = {
         ...data,
-        visibility: isPremium ? data.visibility : "public", // Security fallback
+        visibility: isPremium ? data.visibility : "public",
         creatorId: user.id,
         creatorName: user.name,
         creatorEmail: user.email,
         creatorProfileImage: user.image,
       };
-      // Call your backend API
+
       const res = await addLessons(newLesson);
 
       toast.success("Lesson published successfully!");
@@ -81,7 +76,6 @@ export default function AddLessonPage() {
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="max-w-4xl mx-auto pb-12">
-        {/* Header */}
         <div className="mb-8 mt-4">
           <h1 className="text-3xl font-bold text-base-content flex items-center gap-3 mb-2">
             <FaBookOpen className="text-primary" />
@@ -93,12 +87,9 @@ export default function AddLessonPage() {
           </p>
         </div>
 
-        {/* Main Form Card */}
         <div className="card bg-base-100 shadow-xl border border-base-200">
           <div className="card-body p-6 md:p-8">
-            {/* Note: We pass our onSubmit function into RHF's handleSubmit */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Title */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content">
@@ -113,7 +104,7 @@ export default function AddLessonPage() {
                     required: "Lesson title is required.",
                   })}
                 />
-                {/* Validation Error Message */}
+
                 {errors.title && (
                   <span className="text-error text-sm mt-1.5 font-medium px-1">
                     {errors.title.message}
@@ -121,7 +112,6 @@ export default function AddLessonPage() {
                 )}
               </div>
 
-              {/* Description / Story */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content">
@@ -143,9 +133,7 @@ export default function AddLessonPage() {
                 )}
               </div>
 
-              {/* Grid for Dropdowns: Category & Tone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Category */}
                 <div className="form-control w-full">
                   <label className="label">
                     <span className="label-text font-semibold text-base-content">
@@ -164,7 +152,6 @@ export default function AddLessonPage() {
                   </select>
                 </div>
 
-                {/* Emotional Tone */}
                 <div className="form-control w-full">
                   <label className="label">
                     <span className="label-text font-semibold text-base-content">
@@ -183,7 +170,6 @@ export default function AddLessonPage() {
                 </div>
               </div>
 
-              {/* Image (Optional) */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content flex items-center gap-2">
@@ -205,7 +191,6 @@ export default function AddLessonPage() {
                 </label>
               </div>
 
-              {/* Access Level (Free / Premium Logic) */}
               <div className="form-control w-full md:w-1/2 pt-2">
                 <label className="label">
                   <span className="label-text font-semibold text-base-content">
@@ -249,7 +234,6 @@ export default function AddLessonPage() {
                 </label>
               </div>
 
-              {/* Submit Button */}
               <div className="form-control mt-8 pt-6 border-t border-base-200">
                 <button
                   type="submit"

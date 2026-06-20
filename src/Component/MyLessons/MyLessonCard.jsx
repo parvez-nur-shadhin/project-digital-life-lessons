@@ -15,7 +15,7 @@ const MyLessonCard = ({ lesson }) => {
   const handleDelete = async() => {
     const res = await deleteLesson(lesson?._id);
   }
-  // Format Date safely
+  
   const formattedDate = lesson.createdAt
     ? new Date(lesson.createdAt).toLocaleDateString("en-US", {
         month: "short",
@@ -27,7 +27,7 @@ const MyLessonCard = ({ lesson }) => {
   return (
     <div className="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-all duration-300 flex flex-col h-full">
       <div className="card-body p-5 flex flex-col flex-grow">
-        {/* Top Row: Date & Visibility Badge */}
+        
         <div className="flex justify-between items-start mb-3">
           <span className="text-xs text-base-content/60 font-medium">
             Published: {formattedDate}
@@ -43,7 +43,7 @@ const MyLessonCard = ({ lesson }) => {
           )}
         </div>
 
-        {/* Title & Description */}
+       
         <h2
           className="card-title text-xl font-extrabold leading-tight line-clamp-2 mt-1"
           title={lesson.title}
@@ -73,7 +73,7 @@ const MyLessonCard = ({ lesson }) => {
             <span className="text-[10px] uppercase">View</span>
           </Link>
 
-          {/* Note: You will need to create an /edit-lesson/[id] page later! */}
+          
           <Link
             href={`/edit-lesson/${lesson._id}`}
             className="btn btn-sm btn-ghost text-info hover:bg-info/10 w-full flex-col gap-1 h-auto py-2"
@@ -94,7 +94,7 @@ const MyLessonCard = ({ lesson }) => {
         </div>
       </div>
 
-      {/* Unique Delete Confirmation Modal for each card */}
+      
       <dialog id={`delete_modal_${lesson._id}`} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg text-error">Delete Lesson?</h3>
