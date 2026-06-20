@@ -3,57 +3,37 @@
 import React from "react";
 import Link from "next/link";
 import { FaEye } from "react-icons/fa";
+import { getUsers } from "@/lib/actions/user";
+import Image from "next/image";
 
-export default function AdminOverviewTables() {
-  const topContributors = [
-    { id: 1, name: "Parvez Nur", lessons: 42, role: "Admin" },
-    { id: 2, name: "Sarah Connor", lessons: 28, role: "Premium" },
-    { id: 3, name: "Alex Smith", lessons: 15, role: "User" },
-  ];
+export default function AdminOverviewTables({ users, lessons }) {
+  const topContributors = users;
 
-  const recentLessons = [
-    {
-      id: 101,
-      title: "Why I quit my corporate job",
-      author: "Sarah Connor",
-      category: "Career",
-    },
-    {
-      id: 102,
-      title: "The power of saying No",
-      author: "Alex Smith",
-      category: "Mindset",
-    },
-    {
-      id: 103,
-      title: "Finding peace in chaos",
-      author: "John Doe",
-      category: "Personal Growth",
-    },
-  ];
+  const recentLessons = lessons;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Most Active Contributors */}
       <div className="card bg-base-100 shadow-sm border border-base-200 col-span-1">
         <div className="card-body p-5">
           <h2 className="card-title text-lg mb-4">Top Contributors</h2>
           <div className="space-y-4">
             {topContributors.map((user) => (
-              <div key={user.id} className="flex items-center justify-between">
+              <div key={user._id} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="avatar placeholder">
                     <div className="bg-neutral text-neutral-content rounded-full w-10">
-                      <span>{user.name.charAt(0)}</span>
+                      <Image
+                        src={user.image}
+                        alt="user"
+                        height={40}
+                        width={40}
+                      />
                     </div>
                   </div>
                   <div>
                     <p className="font-bold text-sm">{user.name}</p>
                     <p className="text-xs text-base-content/60">{user.role}</p>
                   </div>
-                </div>
-                <div className="badge badge-primary badge-sm font-bold">
-                  {user.lessons}
                 </div>
               </div>
             ))}
@@ -66,7 +46,7 @@ export default function AdminOverviewTables() {
           <div className="flex justify-between items-center mb-4">
             <h2 className="card-title text-lg">Today's New Lessons</h2>
             <Link
-              href="/dashboard/admin/manage-lessons"
+              href="/admin-dashboard/manage-users"
               className="btn btn-xs btn-ghost text-primary"
             >
               View All
@@ -85,26 +65,28 @@ export default function AdminOverviewTables() {
               </thead>
               <tbody>
                 {recentLessons.map((lesson) => (
-                  <tr key={lesson.id}>
+                  <tr key={lesson._id}>
                     <td
                       className="font-semibold text-base-content line-clamp-1 max-w-[200px]"
                       title={lesson.title}
                     >
                       {lesson.title}
                     </td>
-                    <td className="text-sm">{lesson.author}</td>
+                    <td className="text-sm">{lesson.creatorName}</td>
                     <td>
                       <span className="badge badge-ghost badge-sm">
                         {lesson.category}
                       </span>
                     </td>
                     <td className="text-right">
-                      <button
-                        className="btn btn-square btn-ghost btn-sm text-primary"
-                        title="View Lesson"
-                      >
-                        <FaEye />
-                      </button>
+                      <Link href={`/lessons/${lesson._id}`}>
+                        <button
+                          className="btn btn-square btn-ghost btn-sm text-primary"
+                          title="View Lesson"
+                        >
+                          <FaEye />
+                        </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}

@@ -29,7 +29,7 @@ export default async function AdminDashboardHome() {
 
       <AdminGrowthChart />
 
-      <AdminOverviewTables />
+      <AdminOverviewTables users={users} lessons={lessons} />
     </div>
   );
 }

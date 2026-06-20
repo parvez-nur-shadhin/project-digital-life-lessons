@@ -95,7 +95,7 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href={user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user"}>DashBoard</Link>
+                    <Link href={user?.role === "admin" ? "/admin-dashboard" : "/dashboard/user"}>DashBoard</Link>
                   </li>
                   <li>
                     <button onClick={handleSignOut}>Logout</button>
