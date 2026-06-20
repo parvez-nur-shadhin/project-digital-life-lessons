@@ -13,6 +13,7 @@ import {
   FaLock,
   FaEyeSlash,
 } from "react-icons/fa";
+import { deleteLesson } from "@/lib/actions/lessons";
 
 export default function MyLessonsTable({ initialLessons, isPremium }) {
   const [lessons, setLessons] = useState(initialLessons);
@@ -58,8 +59,7 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
     setLessons(lessons.filter((l) => l._id !== lessonToDelete._id));
     toast.success("Lesson deleted successfully");
 
-    // TODO: Call backend to actually delete
-    // await fetch(`/api/lessons/${lessonToDelete._id}`, { method: "DELETE" });
+    const res = await deleteLesson(lessonToDelete?._id);
 
     setLessonToDelete(null);
   };
@@ -181,7 +181,7 @@ export default function MyLessonsTable({ initialLessons, isPremium }) {
                       <FaEye className="text-lg" />
                     </Link>
                     <Link
-                      href={`/dashboard/edit-lesson/${lesson._id}`}
+                      href={`/edit-lesson/${lesson._id}`}
                       className="btn btn-sm btn-square btn-ghost text-info"
                       title="Edit Lesson"
                     >

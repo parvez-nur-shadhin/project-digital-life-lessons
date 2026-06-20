@@ -14,7 +14,7 @@ import {
 
 export default function DashboardSideBar({ children }) {
   const pathname = usePathname();
-
+  
   // Helper function to check if the link is active
   const isActive = (path) => pathname === path;
 
@@ -37,7 +37,7 @@ export default function DashboardSideBar({ children }) {
     },
     {
       name: "My Favorites",
-      href: "/dashboard/favorites",
+      href: "/dashboard/user/favorites",
       icon: <FaBookmark className="text-lg" />,
     },
     {

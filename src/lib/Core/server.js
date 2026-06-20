@@ -1,26 +1,25 @@
-'use server'
+"use server";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-
-
 export const serverFetch = async (path) => {
-    const res = await fetch(`${baseUrl}${path}`);
-    // handle 401, 404, 403
-    return res.json();
-}
+  const res = await fetch(`${baseUrl}${path}`);
+  // handle 401, 404, 403
+  return res.json();
+};
 
+export const serverMutation = async (path, data, method = "POST") => {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: method,
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
-export const serverMutation = async (path, data, method = 'POST') => {
+  if (!res.ok) {
+    console.error("Backend returned an error status:", res.status);
+    return { error: `Server failed with status ${res.status}` };
+  }
 
-    const res = await fetch(`${baseUrl}${path}`, {
-        method: method,
-        headers: {
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    });
-
-    // handle 401, 404, 403
-
-    return res.json();
-}
+  return res.json();
+};

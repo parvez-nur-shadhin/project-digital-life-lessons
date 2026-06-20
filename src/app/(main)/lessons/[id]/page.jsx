@@ -21,9 +21,7 @@ export default async function LessonDetailsPage({ params }) {
     if (!user) {
     redirect("/sign-up");
   }
-  if (user?.plan !== lesson.creatorPlan) {
-    redirect("/pricing-plan");
-  }
+
 
   // Estimate read time (roughly 200 words per minute)
   const wordCount = lesson.description.split(" ").length;

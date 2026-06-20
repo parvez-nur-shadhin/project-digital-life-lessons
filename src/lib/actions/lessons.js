@@ -4,17 +4,46 @@ import { serverFetch, serverMutation } from "../Core/server";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const addLessons = async (lessonsInfo) => {
-  return serverMutation('/api/lessons', lessonsInfo, "POST");
+  return serverMutation("/api/lessons", lessonsInfo, "POST");
 };
 
 export const gettingLessons = async () => {
-  return serverFetch('/api/lessons')
-}
+  return serverFetch("/api/lessons");
+};
 
 export const getLessonById = async (id) => {
-  console.log(id)
-  const res = await fetch(`${baseUrl}/api/lessons/${id}`, {
-    cache: "no-store"
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${baseUrl}/api/lessons/${id}`, {
+      cache: "no-store", // Ensure we always get the freshest data
+    });
+    if (!res.ok) return { error: "Failed to fetch lesson" };
+    return await res.json();
+  } catch (error) {
+    return { error: "Server error" };
+  }
 };
+
+export const updateLesson = async (id, updatedData) => {
+  try {
+    const res = await fetch(`${baseUrl}/api/lessons/${id}`, {
+      method: "PUT", // or PATCH depending on your Express backend
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData),
+    });
+    if (!res.ok) return { error: "Failed to update lesson" };
+    return await res.json();
+  } catch (error) {
+    return { error: "Server error" };
+  }
+};
+
+export const deleteLesson = async (id) => {
+  const res = await fetch(`${baseUrl}/api/lessons/${id}`, {
+    method: "DELETE",
+  });
+  return await res.json();
+};
+
+export const addFavoriteLesson = async (lesson) => {
+  return serverMutation('/api/favorites', lesson);
+}

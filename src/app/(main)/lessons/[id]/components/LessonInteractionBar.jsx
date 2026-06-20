@@ -19,6 +19,7 @@ import {
 } from "react-share";
 import { authClient } from "@/lib/auth-client"; // Your better-auth client
 import toast from "react-hot-toast";
+import { addFavoriteLesson } from "@/lib/actions/lessons";
 
 export default function LessonInteractionBar({ lesson }) {
   const { data: session } = authClient.useSession();
@@ -54,7 +55,18 @@ export default function LessonInteractionBar({ lesson }) {
     setSavesCount(hasSaved ? savesCount - 1 : savesCount + 1);
     toast.success(hasSaved ? "Removed from favorites" : "Saved to favorites!");
 
-    // TODO: Call serverMutation
+    // Attach the user's email so the backend knows who saved it!
+    const lessonToSave = {
+      ...lesson,
+      userEmail: user.email,
+    };
+
+    const res = await addFavoriteLesson(lessonToSave);
+
+    if (res?.error) {
+      toast.error("Failed to save to database");
+      setHasSaved(!hasSaved); // Rollback on failure
+    }
   };
 
   const handleReport = () => {

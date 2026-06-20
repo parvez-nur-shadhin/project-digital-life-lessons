@@ -7,13 +7,13 @@ import { FaBookOpen, FaBookmark, FaArrowRight, FaFolderOpen } from "react-icons/
 import MyLessonCard from "@/Component/MyLessons/MyLessonCard";
 import { gettingLessons } from "@/lib/actions/lessons";
 
-export default function DashboardHomePage() {
+export default function DashboardHomePage({favorites}) {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
   const [myLessons, setMyLessons] = useState([]);
-  const [totalFavorites, setTotalFavorites] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -114,7 +114,7 @@ export default function DashboardHomePage() {
               <p className="text-sm text-base-content/60 font-bold uppercase tracking-wide">
                 Total Favorites
               </p>
-              <h3 className="text-4xl font-black mt-1">{totalFavorites}</h3>
+              <h3 className="text-4xl font-black mt-1">{favorites.length}</h3>
             </div>
           </div>
         </div>

@@ -7,8 +7,14 @@ import {
   FaGlobeAmericas,
   FaLock,
 } from "react-icons/fa";
+import { deleteLesson } from "@/lib/actions/lessons";
 
 const MyLessonCard = ({ lesson }) => {
+
+
+  const handleDelete = async() => {
+    const res = await deleteLesson(lesson?._id);
+  }
   // Format Date safely
   const formattedDate = lesson.createdAt
     ? new Date(lesson.createdAt).toLocaleDateString("en-US", {
@@ -99,8 +105,8 @@ const MyLessonCard = ({ lesson }) => {
           <div className="modal-action">
             <form method="dialog" className="flex gap-2 w-full">
               <button className="btn btn-outline flex-1">Cancel</button>
-              {/* TODO: Add onClick handler to actually delete from MongoDB */}
-              <button className="btn btn-error flex-1">Yes, Delete</button>
+             
+              <button onClick={handleDelete} className="btn btn-error flex-1">Yes, Delete</button>
             </form>
           </div>
         </div>
