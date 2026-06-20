@@ -2,6 +2,7 @@
 
 import { addLessons } from "@/lib/actions/lessons";
 import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaBookOpen, FaSave } from "react-icons/fa";
@@ -67,14 +68,8 @@ const AddLessonPage = () => {
 
   // 5. Optional: If they aren't logged in, don't let them see the form
   if (!user) {
-    return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-          <p>You must be logged in to create a lesson.</p>
-        </div>
-      </div>
-    );
+    redirect('/sign-up');
+    
   }
 
   return (

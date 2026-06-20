@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FaHome, FaSearch } from "react-icons/fa";
+import "./globals.css";
 
 export default function NotFoundPage() {
   return (

@@ -5,16 +5,12 @@ import { gettingSession } from "@/lib/Core/session";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 
-const LessonCard = async ({ lesson }) => {
-
-
+const LessonCard = ({ lesson }) => {
   const formattedDate = new Date(lesson.createdAt).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
-
-
 
   return (
     <div className="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
@@ -49,7 +45,7 @@ const LessonCard = async ({ lesson }) => {
           </div>
 
           {/* Access Level Badge */}
-          {lesson.creatorPlan?.toLowerCase() === "premium" ? (
+          {lesson.visibility?.toLowerCase() === "premium" ? (
             <div className="badge badge-warning gap-1 text-xs font-bold shadow-sm p-3 py-4">
               <FaLock className="text-[10px]" /> Premium
             </div>
