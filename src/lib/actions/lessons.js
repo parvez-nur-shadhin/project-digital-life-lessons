@@ -47,3 +47,20 @@ export const deleteLesson = async (id) => {
 export const addFavoriteLesson = async (lesson) => {
   return serverMutation("/api/favorites", lesson);
 };
+
+export const reportLesson = async (id, reportData) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  try {
+    const res = await fetch(`${baseUrl}/api/lessons/${id}/report`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reportData),
+    });
+
+    if (!res.ok) return { error: "Failed to submit report" };
+    return await res.json();
+  } catch (error) {
+    return { error: "Server connection failed" };
+  }
+};

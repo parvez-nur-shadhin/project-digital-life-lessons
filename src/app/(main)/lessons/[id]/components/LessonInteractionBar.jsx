@@ -17,68 +17,82 @@ import {
   FacebookIcon,
   LinkedinIcon,
 } from "react-share";
-import { authClient } from "@/lib/auth-client"; // Your better-auth client
+import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
-import { addFavoriteLesson } from "@/lib/actions/lessons";
+
+import { addFavoriteLesson, reportLesson } from "@/lib/actions/lessons";
 
 export default function LessonInteractionBar({ lesson }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
-  // Initialize States based on current user
   const [hasLiked, setHasLiked] = useState(
-    user ? lesson.likes.includes(user.id) : false,
+    user ? lesson.likes?.includes(user.id) : false,
   );
-  const [likesCount, setLikesCount] = useState(lesson.likes.length);
-  const [hasSaved, setHasSaved] = useState(false); // You would check user's saved list here
-  const [savesCount, setSavesCount] = useState(lesson.savesCount);
+  const [likesCount, setLikesCount] = useState(lesson.likes?.length || 0);
+  const [hasSaved, setHasSaved] = useState(false);
+  const [savesCount, setSavesCount] = useState(lesson.savesCount || 0);
 
-  // For Sharing
+  const [reportReason, setReportReason] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
+
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
-  // --- HANDLERS ---
   const handleLike = async () => {
     if (!user) return toast.error("Please log in to like this lesson");
-
-    // Optimistic UI Update
     setHasLiked(!hasLiked);
     setLikesCount(hasLiked ? likesCount - 1 : likesCount + 1);
-
-    // TODO: Call your serverMutation here to update DB
-    // await serverMutation(`/api/lessons/${lesson._id}/like`, { userId: user.id });
   };
 
   const handleSave = async () => {
     if (!user) return toast.error("Please log in to save lessons");
-
     setHasSaved(!hasSaved);
     setSavesCount(hasSaved ? savesCount - 1 : savesCount + 1);
     toast.success(hasSaved ? "Removed from favorites" : "Saved to favorites!");
 
-    // Attach the user's email so the backend knows who saved it!
-    const lessonToSave = {
-      ...lesson,
-      userEmail: user.email,
-    };
-
+    const lessonToSave = { ...lesson, userEmail: user.email };
     const res = await addFavoriteLesson(lessonToSave);
 
     if (res?.error) {
       toast.error("Failed to save to database");
-      setHasSaved(!hasSaved); // Rollback on failure
+      setHasSaved(!hasSaved);
     }
   };
 
-  const handleReport = () => {
+  const handleReportOpen = () => {
     if (!user) return toast.error("Please log in to report content");
-    // Ideally open a modal here with a dropdown for reasons
     document.getElementById("report_modal").showModal();
+  };
+
+  const submitReport = async () => {
+    if (!reportReason) return toast.error("Please select a reason");
+
+    setIsReporting(true);
+
+    const reportData = {
+      reason: reportReason,
+      reporterEmail: user.email,
+      reportedAt: new Date().toISOString(),
+    };
+
+    try {
+      const res = await reportLesson(lesson._id, reportData);
+      if (res.error) throw new Error(res.error);
+
+      toast.success("Report submitted successfully.");
+
+      document.getElementById("report_modal").close();
+      setReportReason("");
+    } catch (error) {
+      toast.error("Failed to submit report.");
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   return (
     <>
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Left Side: Like & Save */}
         <div className="flex items-center gap-4">
           <button
             onClick={handleLike}
@@ -109,9 +123,7 @@ export default function LessonInteractionBar({ lesson }) {
           </button>
         </div>
 
-        {/* Right Side: Share & Report */}
         <div className="flex items-center gap-2">
-          {/* Social Share Dropdown */}
           <div className="dropdown dropdown-end md:dropdown-top">
             <div
               tabIndex={0}
@@ -143,7 +155,7 @@ export default function LessonInteractionBar({ lesson }) {
           </div>
 
           <button
-            onClick={handleReport}
+            onClick={handleReportOpen}
             className="btn btn-ghost btn-sm text-base-content/50 hover:text-error gap-2"
           >
             <FaFlag /> Report
@@ -151,36 +163,44 @@ export default function LessonInteractionBar({ lesson }) {
         </div>
       </div>
 
-      {/* Basic DaisyUI Report Modal */}
       <dialog id="report_modal" className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Report this lesson</h3>
+          <h3 className="font-bold text-lg text-error flex items-center gap-2">
+            <FaFlag /> Report this lesson
+          </h3>
           <p className="py-4">Why are you reporting this content?</p>
+
           <select
-            className="select select-bordered w-full mb-4"
-            defaultValue=""
+            className="select select-bordered w-full mb-6"
+            value={reportReason}
+            onChange={(e) => setReportReason(e.target.value)}
           >
-            {/* 2. Remove 'selected' and give it an empty value matching the default */}
             <option value="" disabled>
               Select a reason
             </option>
-
             <option value="Spam or misleading">Spam or misleading</option>
             <option value="Inappropriate content">Inappropriate content</option>
             <option value="Harassment or hate speech">
               Harassment or hate speech
             </option>
+            <option value="Plagiarism">Plagiarism</option>
           </select>
-          <div className="modal-action">
-            <form method="dialog" className="flex gap-2 w-full">
+
+          <div className="modal-action flex gap-2 w-full mt-0">
+            <form method="dialog" className="flex-1 flex">
               <button className="btn btn-outline flex-1">Cancel</button>
-              <button
-                onClick={() => toast.success("Report submitted")}
-                className="btn btn-error flex-1"
-              >
-                Submit Report
-              </button>
             </form>
+
+            <button
+              onClick={submitReport}
+              disabled={isReporting || !reportReason}
+              className="btn btn-error flex-1 text-white"
+            >
+              {isReporting ? (
+                <span className="loading loading-spinner"></span>
+              ) : null}
+              Submit Report
+            </button>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
