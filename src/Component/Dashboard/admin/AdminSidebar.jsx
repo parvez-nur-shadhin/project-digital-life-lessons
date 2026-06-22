@@ -5,12 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   FaHome,
-  FaPlus,
-  FaBookOpen,
-  FaBookmark,
   FaUser,
   FaBars,
 } from "react-icons/fa";
+import { IoMdFlag } from "react-icons/io";
+import { MdOutlineManageAccounts } from "react-icons/md";
+import { BsFillFileEarmarkPostFill } from "react-icons/bs";
 
 export default function AdminSidebar({ children }) {
   const pathname = usePathname();
@@ -24,14 +24,19 @@ export default function AdminSidebar({ children }) {
       icon: <FaHome className="text-lg" />,
     },
     {
+      name: "Manage Posts",
+      href: "/admin-dashboard/manage-lessons",
+      icon: <BsFillFileEarmarkPostFill className="text-lg" />,
+    },
+    {
       name: "Manage Users",
       href: "/admin-dashboard/manage-users",
-      icon: <FaPlus className="text-lg" />,
+      icon: <MdOutlineManageAccounts className="text-lg" />,
     },
     {
       name: "Reported / Flagged Lessons",
       href: "/admin-dashboard/reported-lessons",
-      icon: <FaBookOpen className="text-lg" />,
+      icon: <IoMdFlag className="text-lg" />,
     },
     {
       name: "Admin Profile",
