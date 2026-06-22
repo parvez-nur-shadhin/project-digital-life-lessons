@@ -1,45 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaFire, FaBookmark, FaArrowRight } from "react-icons/fa";
 import Image from "next/image";
 
-export default function TrendingLessons() {
-  // FAKE DATA: Replace with backend fetch later
-  // e.g., fetch('/api/lessons/trending')
-  const trendingLessons = [
-    {
-      id: "101",
-      title: "The power of saying No to good opportunities",
-      author: "Sarah Connor",
-      category: "Career",
-      saves: 342,
-      excerpt:
-        "I spent 5 years saying yes to everything. I got promoted, but I lost myself. Here is how I learned to decline.",
-    },
-    {
-      id: "102",
-      title: "Finding peace after a massive failure",
-      author: "Alex Smith",
-      category: "Mindset",
-      saves: 289,
-      excerpt:
-        "My startup went to zero. It took me a year to realize my self-worth wasn't tied to my net worth.",
-    },
-    {
-      id: "103",
-      title: "Why perfectionism is just masked fear",
-      author: "Parvez Nur",
-      category: "Personal Growth",
-      saves: 215,
-      excerpt:
-        "Waiting for the perfect moment is the best way to ensure nothing ever happens. Start messy.",
-    },
-  ];
+import { gettingLessons } from "@/lib/actions/lessons";
 
-  // Framer Motion Variants
+export default function TrendingLessons() {
+  const [trendingLessons, setTrendingLessons] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAndSortLessons = async () => {
+      try {
+        const rawLessons = await gettingLessons();
+
+        const topThreeLessons = rawLessons
+          .filter((lesson) => lesson.visibility === "public")
+          .sort((a, b) => (b.savesCount || 0) - (a.savesCount || 0))
+          .slice(0, 3);
+
+        setTrendingLessons(topThreeLessons);
+      } catch (error) {
+        console.error("Failed to load and sort lessons", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAndSortLessons();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -57,6 +50,16 @@ export default function TrendingLessons() {
       transition: { duration: 0.4, ease: "easeOut" },
     },
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[300px] bg-base-100">
+        <span className="loading loading-spinner loading-lg text-error"></span>
+      </div>
+    );
+  }
+
+  if (trendingLessons.length === 0) return null;
 
   return (
     <section className="py-20 bg-base-100">
@@ -86,7 +89,6 @@ export default function TrendingLessons() {
           </motion.div>
         </div>
 
-        {/* Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -94,45 +96,62 @@ export default function TrendingLessons() {
           viewport={{ once: true, amount: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {trendingLessons.map((lesson) => (
+          {trendingLessons.map((lesson, index) => (
             <motion.div
-              key={lesson.id}
+              key={lesson._id}
               variants={cardVariants}
-              className="card bg-base-100 shadow-sm hover:shadow-xl border border-base-200 transition-all duration-300 group flex flex-col h-full"
+              className="card bg-base-100 shadow-sm hover:shadow-xl border border-base-200 transition-all duration-300 group flex flex-col h-full relative overflow-hidden"
             >
-              <div className="card-body p-6 flex flex-col grow">
-                {/* Meta Row */}
+              <div
+                className={`absolute top-0 right-0 text-xs font-black px-4 py-1.5 rounded-bl-xl z-10 ${
+                  index === 0
+                    ? "bg-warning text-warning-content"
+                    : index === 1
+                      ? "bg-base-300 text-base-content"
+                      : "bg-amber-700 text-white"
+                }`}
+              >
+                #{index + 1}
+              </div>
+
+              <div className="card-body p-6 flex flex-col grow pt-8">
                 <div className="flex justify-between items-start mb-4">
                   <span className="badge badge-ghost badge-sm font-semibold">
-                    {lesson.category}
+                    {lesson.category || "General"}
                   </span>
                   <div className="flex items-center gap-1 text-primary font-bold text-sm bg-primary/10 px-2 py-1 rounded-md">
-                    <FaBookmark /> {lesson.saves}
+                    <FaBookmark /> {lesson.savesCount || 0}
                   </div>
                 </div>
 
-                {/* Content */}
                 <h3 className="card-title text-xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                  <Link href={`/lessons/${lesson.id}`}>{lesson.title}</Link>
+                  <Link
+                    href={`/lessons/${lesson._id}`}
+                    className="before:absolute before:inset-0"
+                  >
+                    {lesson.title}
+                  </Link>
                 </h3>
                 <p className="text-base-content/60 text-sm line-clamp-3 mb-6 grow">
-                  {lesson.excerpt}
+                  {lesson.description}
                 </p>
 
-                {/* Author Footer */}
-                <div className="flex items-center gap-3 pt-4 border-t border-base-200 mt-auto">
+                <div className="flex items-center gap-3 pt-4 border-t border-base-200 mt-auto relative z-20">
                   <div className="avatar">
-                    <div className="w-8 rounded-full bg-base-300">
+                    <div className="w-8 h-8 rounded-full bg-base-300 relative overflow-hidden">
                       <Image
-                        src={`https://ui-avatars.com/api/?name=${lesson.author}&background=random`}
-                        alt={lesson.author}
-                        width={32}
-                        height={32}
+                        src={
+                          lesson.creatorProfileImage ||
+                          `https://ui-avatars.com/api/?name=${lesson.creatorName || "User"}&background=random`
+                        }
+                        alt={lesson.creatorName || "Author"}
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   </div>
                   <span className="text-sm font-semibold text-base-content/80">
-                    {lesson.author}
+                    {lesson.creatorName || "Anonymous"}
                   </span>
                 </div>
               </div>

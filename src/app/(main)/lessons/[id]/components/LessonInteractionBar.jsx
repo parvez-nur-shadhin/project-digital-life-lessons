@@ -20,17 +20,20 @@ import {
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
-import { addFavoriteLesson, reportLesson } from "@/lib/actions/lessons";
+import { toggleSaveLesson, reportLesson } from "@/lib/actions/lessons";
 
 export default function LessonInteractionBar({ lesson }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
   const [hasLiked, setHasLiked] = useState(
-    user ? lesson.likes?.includes(user.id) : false,
+    user ? (lesson.likes || []).includes(user.id) : false,
   );
   const [likesCount, setLikesCount] = useState(lesson.likes?.length || 0);
-  const [hasSaved, setHasSaved] = useState(false);
+
+  const [hasSaved, setHasSaved] = useState(
+    user ? (lesson.savedBy || []).includes(user.id) : false,
+  );
   const [savesCount, setSavesCount] = useState(lesson.savesCount || 0);
 
   const [reportReason, setReportReason] = useState("");
@@ -40,22 +43,28 @@ export default function LessonInteractionBar({ lesson }) {
 
   const handleLike = async () => {
     if (!user) return toast.error("Please log in to like this lesson");
+
     setHasLiked(!hasLiked);
     setLikesCount(hasLiked ? likesCount - 1 : likesCount + 1);
   };
 
   const handleSave = async () => {
     if (!user) return toast.error("Please log in to save lessons");
-    setHasSaved(!hasSaved);
-    setSavesCount(hasSaved ? savesCount - 1 : savesCount + 1);
-    toast.success(hasSaved ? "Removed from favorites" : "Saved to favorites!");
 
-    const lessonToSave = { ...lesson, userEmail: user.email };
-    const res = await addFavoriteLesson(lessonToSave);
+    const newSaveStatus = !hasSaved;
+    setHasSaved(newSaveStatus);
+    setSavesCount(newSaveStatus ? savesCount + 1 : savesCount - 1);
+    toast.success(
+      newSaveStatus ? "Saved to favorites!" : "Removed from favorites",
+    );
 
-    if (res?.error) {
-      toast.error("Failed to save to database");
-      setHasSaved(!hasSaved);
+    try {
+      const res = await toggleSaveLesson(lesson._id, user.id);
+      if (res.error) throw new Error(res.error);
+    } catch (error) {
+      toast.error("Failed to update database. Reverting.");
+      setHasSaved(!newSaveStatus);
+      setSavesCount(newSaveStatus ? savesCount - 1 : savesCount + 1);
     }
   };
 
@@ -80,7 +89,6 @@ export default function LessonInteractionBar({ lesson }) {
       if (res.error) throw new Error(res.error);
 
       toast.success("Report submitted successfully.");
-
       document.getElementById("report_modal").close();
       setReportReason("");
     } catch (error) {

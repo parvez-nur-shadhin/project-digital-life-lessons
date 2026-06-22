@@ -64,3 +64,21 @@ export const reportLesson = async (id, reportData) => {
     return { error: "Server connection failed" };
   }
 };
+
+
+
+export const toggleSaveLesson = async (id, userId) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  try {
+    const res = await fetch(`${baseUrl}/api/lessons/${id}/save`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    });
+    
+    if (!res.ok) return { error: "Failed to toggle save" };
+    return await res.json();
+  } catch (error) {
+    return { error: "Server connection failed" };
+  }
+};
