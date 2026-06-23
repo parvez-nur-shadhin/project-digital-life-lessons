@@ -1,24 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaMedal, FaPenNib } from "react-icons/fa";
 
+import Image from "next/image";
+import { getTopContributors } from "@/lib/actions/user";
+
 export default function TopContributors() {
-  // FAKE DATA: Replace with backend fetch later
-  // e.g., fetch('/api/users/top-contributors')
-  const contributors = [
-    {
-      id: 1,
-      name: "Sarah Connor",
-      role: "Mindset Coach",
-      lessons: 12,
-      image: "",
-    },
-    { id: 2, name: "Alex Smith", role: "Entrepreneur", lessons: 9, image: "" },
-    { id: 3, name: "Parvez Nur", role: "Developer", lessons: 7, image: "" },
-    { id: 4, name: "Emma Watson", role: "Designer", lessons: 5, image: "" },
-  ];
+  const [contributors, setContributors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 1. Fetch real aggregated data on mount
+  useEffect(() => {
+    const fetchTopUsers = async () => {
+      try {
+        const data = await getTopContributors();
+        setContributors(data);
+      } catch (error) {
+        console.error("Failed to load contributors");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTopUsers();
+  }, []);
 
   // Framer Motion Variants
   const containerVariants = {
@@ -37,6 +43,18 @@ export default function TopContributors() {
       transition: { type: "spring", stiffness: 100 },
     },
   };
+
+  // Loading State
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[300px] bg-base-200/50">
+        <span className="loading loading-spinner loading-lg text-warning"></span>
+      </div>
+    );
+  }
+
+  // Hide section if nobody has posted anything yet
+  if (contributors.length === 0) return null;
 
   return (
     <section className="py-16 bg-base-200/50">
@@ -67,32 +85,48 @@ export default function TopContributors() {
         >
           {contributors.map((user, index) => (
             <motion.div
-              key={user.id}
+              key={user._id}
               variants={itemVariants}
               whileHover={{ scale: 1.03 }}
               className="card bg-base-100 shadow-sm border border-base-200 relative overflow-hidden"
             >
               {/* Rank Badge */}
-              <div className="absolute top-0 right-0 bg-primary text-primary-content font-black text-xs px-3 py-1 rounded-bl-xl z-10">
+              <div
+                className={`absolute top-0 right-0 font-black text-xs px-3 py-1 rounded-bl-xl z-10 ${
+                  index === 0
+                    ? "bg-warning text-warning-content"
+                    : index === 1
+                      ? "bg-base-300 text-base-content"
+                      : index === 2
+                        ? "bg-amber-700 text-white"
+                        : "bg-primary text-primary-content"
+                }`}
+              >
                 #{index + 1}
               </div>
 
               <div className="card-body items-center text-center pt-8 p-6">
                 <div className="avatar mb-3">
                   <div className="w-20 rounded-full ring ring-primary/20 ring-offset-base-100 ring-offset-2">
-                    <img
+                    <Image
                       src={
                         user.image ||
                         `https://ui-avatars.com/api/?name=${user.name}&background=random&size=150`
                       }
-                      alt={user.name}
+                      alt={user.name || "User"}
+                      height={80}
+                      width={80}
                     />
                   </div>
                 </div>
-                <h3 className="card-title text-lg mb-0">{user.name}</h3>
+                <h3 className="card-title text-lg mb-0">
+                  {user.name || "Anonymous"}
+                </h3>
+
                 <p className="text-xs text-base-content/50 font-semibold uppercase tracking-wider mb-4">
-                  {user.role}
+                  {user.role || "Creator"}
                 </p>
+
                 <div className="badge badge-primary badge-outline gap-2 font-bold py-3 px-4">
                   <FaPenNib /> {user.lessons} Lessons
                 </div>

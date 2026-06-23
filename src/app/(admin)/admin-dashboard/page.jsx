@@ -1,11 +1,11 @@
 
 import { FaChartLine } from "react-icons/fa";
-import AdminStatCards from "@/Component/Dashboard/Admin/AdminStatCards";
-import AdminGrowthChart from "@/Component/Dashboard/Admin/AdminGrowthChart";
-import AdminOverviewTables from "@/Component/Dashboard/Admin/AdminOverviewTables";
 import { getUsers } from "@/lib/actions/user";
 import { gettingLessons } from "@/lib/actions/lessons";
 import { getFlagged } from "@/lib/actions/flagged";
+import AdminStatCards from "@/Component/Dashboard/admin/AdminStatCards";
+import AdminGrowthChart from "@/Component/Dashboard/admin/AdminGrowthChart";
+import AdminOverviewTables from "@/Component/Dashboard/admin/AdminOverviewTables";
 
 export default async function AdminDashboardHome() {
 

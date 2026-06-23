@@ -1,15 +1,37 @@
 "use client";
 
-import { addLessons } from "@/lib/actions/lessons";
+import MoreThanThree from "@/Component/MoreThanThree";
+import { addLessons, gettingLessons } from "@/lib/actions/lessons";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaBookOpen, FaSave } from "react-icons/fa";
 
 const AddLessonPage = () => {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+
+  const [lessons, setLessons] = useState([]);
+
+  useEffect(() => {
+    const rawLessons = async () => {
+      try {
+        const data = await gettingLessons();
+        setLessons(data);
+      } catch (error) {
+        console.error("Failed to fetch lessons:", error);
+      }
+    };
+
+    rawLessons();
+  }, []);
+
+  const totalLessonsByUsers = lessons.filter(
+    (item) => item.creatorId === user?.id,
+  );
+
+  const totalLessons = totalLessonsByUsers.length;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,6 +85,14 @@ const AddLessonPage = () => {
 
   if (!user) {
     redirect("/sign-up");
+  }
+
+  if (user?.plan == "free" && totalLessons >= 3) {
+    return (
+      <>
+        <MoreThanThree />
+      </>
+    );
   }
 
   return (

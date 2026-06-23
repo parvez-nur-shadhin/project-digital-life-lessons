@@ -32,3 +32,18 @@ export const deleteUser = async (id) => {
     return { error: "Server connection failed" };
   }
 };
+
+
+export const getTopContributors = async () => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  try {
+    const res = await fetch(`${baseUrl}/api/users/top-contributors`, { 
+      cache: "no-store" 
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to fetch top contributors", error);
+    return [];
+  }
+};
