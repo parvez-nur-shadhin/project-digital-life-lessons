@@ -1,4 +1,5 @@
 
+import Link from "next/link";
 import { FaCrown } from "react-icons/fa";
 
 const MoreThanThree = () => {
@@ -18,12 +19,12 @@ const MoreThanThree = () => {
             for unlimited access.
           </p>
         </div>
-        <button
-          onClick={() => redirect("/pricing")}
+        <Link
+          href={"/pricing-plan"}
           className="btn btn-warning shadow-md mt-2 normal-case"
         >
           Upgrade to Premium
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -82,7 +82,10 @@ export default async function SuccessPage() {
           </div>
 
           <div className="w-full flex flex-col sm:flex-row gap-3">
-            <Link href="/dashboard" className="btn btn-primary flex-1 gap-2">
+            <Link
+              href="/dashboard/user"
+              className="btn btn-primary flex-1 gap-2"
+            >
               Go to Dashboard <FaArrowRight />
             </Link>
           </div>
