@@ -90,7 +90,7 @@ const Navbar = () => {
                     {user?.name}
                   </h1>
                   <li>
-                    <Link href={"/"} className="justify-between">
+                    <Link href={user?.role == "admin" ? "/admin-dashboard/profile" : "/dashboard/user/profile"} className="justify-between">
                       Profile
                     </Link>
                   </li>
