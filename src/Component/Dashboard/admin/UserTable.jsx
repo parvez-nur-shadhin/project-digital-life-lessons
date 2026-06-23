@@ -1,10 +1,26 @@
 "use client";
 
+import { gettingLessons } from "@/lib/actions/lessons";
+import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 
 export default function UsersTable({ users, onRoleChange, onDeleteClick }) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
+  const [lessons, setLessons] = useState([]);
+
+  useEffect(() => {
+    const rawLessons = async () => {
+      const data = await gettingLessons();
+      setLessons(data?.lessons || data || []);
+    };
+
+    rawLessons();
+  }, []);
+
   return (
     <div className="overflow-x-auto bg-base-100 rounded-box border border-base-200 shadow-sm">
       <table className="table table-zebra w-full">
@@ -18,54 +34,72 @@ export default function UsersTable({ users, onRoleChange, onDeleteClick }) {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
-            <tr key={u._id}>
-              <td>
-                <div className="flex items-center gap-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle w-10 h-10">
-                      <Image
-                        src={u.image}
-                        alt={u.name}
-                        width={40}
-                        height={40}
-                      />
+          {users.map((u) => {
+            const userLessonCount = lessons.filter(
+              (lesson) =>
+                lesson.creatorId === u._id || lesson.creatorId === u.id,
+            ).length;
+
+            return (
+              <tr key={u._id}>
+                <td>
+                  <div className="flex items-center gap-3">
+                    <div className="avatar">
+                      <div className="mask mask-squircle w-10 h-10">
+                        {u.image ? (
+                          <Image
+                            src={u.image}
+                            alt={u.name || "User avatar"}
+                            width={40}
+                            height={40}
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-base-300 flex items-center justify-center">
+                            <span className="text-xs">No img</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">
+                        {u.name || "Unknown User"}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <div className="font-bold">{u.name || "Unknown User"}</div>
-                  </div>
-                </div>
-              </td>
-              <td className="text-sm">{u.email}</td>
-              <td>
-                <span className="badge badge-ghost font-bold">
-                  {u.totalLessons || 0}
-                </span>
-              </td>
-              <td>
-                <select
-                  className={`select select-sm w-full max-w-[120px] font-semibold ${u.role === "admin" ? "select-primary text-primary" : "select-bordered"}`}
-                  value={u.role || "user"}
-                  onChange={(e) => onRoleChange(u._id, e.target.value)}
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </td>
-              <td className="text-right">
-                <button
-                  onClick={() => onDeleteClick(u)}
-                  className="btn btn-sm btn-square btn-error btn-outline"
-                  title="Delete User"
-                >
-                  <FaTrash />
-                </button>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="text-sm">{u.email}</td>
+                <td>
+                  <span className="badge badge-ghost font-bold">
+                    {userLessonCount}
+                  </span>
+                </td>
+                <td>
+                  <select
+                    className={`select select-sm w-full max-w-[120px] font-semibold ${
+                      u.role === "admin"
+                        ? "select-primary text-primary"
+                        : "select-bordered"
+                    }`}
+                    value={u.role || "user"}
+                    onChange={(e) => onRoleChange(u._id, e.target.value)}
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+                <td className="text-right">
+                  <button
+                    onClick={() => onDeleteClick(u)}
+                    className="btn btn-sm btn-square btn-error btn-outline"
+                    title="Delete User"
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
 
-      
           {users.length === 0 && (
             <tr>
               <td colSpan="5" className="text-center py-8 text-base-content/50">
