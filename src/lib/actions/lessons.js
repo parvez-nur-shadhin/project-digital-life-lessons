@@ -17,7 +17,7 @@ export const gettingLessons = async () => {
 export const getLessonById = async (id) => {
   try {
     const res = await fetch(`${baseUrl}/api/lessons/${id}`, {
-      cache: "no-store", 
+      cache: "no-store",
     });
     if (!res.ok) return { error: "Failed to fetch lesson" };
     return await res.json();
@@ -95,7 +95,6 @@ export async function toggleLikeLesson(lessonId, userId) {
 
     if (!res.ok) throw new Error("Failed to toggle like");
 
-   
     revalidatePath("/lessons");
 
     return await res.json();
@@ -103,19 +102,55 @@ export async function toggleLikeLesson(lessonId, userId) {
     console.error(error);
     return { error: "Something went wrong" };
   }
-};
+}
 
 export const getSavedLessons = async (userId) => {
   try {
     const res = await fetch(`${baseUrl}/api/users/${userId}/saved`, {
-      cache: "no-store", 
+      cache: "no-store",
     });
-    
+
     if (!res.ok) throw new Error("Failed to fetch saved lessons");
-    
+
     return await res.json();
   } catch (error) {
     console.error("Error fetching saved lessons:", error);
-    return []; 
+    return [];
+  }
+};
+
+export const getUserProfile = async (userId) => {
+  console.log(`${baseUrl}/api/user/${userId}`);
+  try {
+    const res = await fetch(`${baseUrl}/api/user/${userId}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error(
+        `Backend rejected Profile Fetch with status: ${res.status}`,
+      );
+      throw new Error("Failed to fetch user profile");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error in getUserProfile:", error.message);
+    return null;
+  }
+};
+
+export const getUserLessons = async (userId) => {
+  try {
+    const res = await fetch(`${baseUrl}/api/users/${userId}/lessons`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch user lessons");
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user lessons:", error);
+    return [];
   }
 };
