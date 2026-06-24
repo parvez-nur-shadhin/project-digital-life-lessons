@@ -1,7 +1,13 @@
+import { gettingSession } from "@/lib/Core/session";
+import { redirect } from "next/navigation";
 import React from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 
-const PricingTable = () => {
+const PricingTable = async() => {
+
+  const user = await gettingSession();
+
+
   const features = [
     {
       name: "Number of lessons that can be created",
@@ -39,6 +45,10 @@ const PricingTable = () => {
       premium: true,
     },
   ];
+
+  if(!user) {
+    redirect('/sign-in');
+  }
 
   const renderCell = (value) => {
     if (typeof value === "string") {
