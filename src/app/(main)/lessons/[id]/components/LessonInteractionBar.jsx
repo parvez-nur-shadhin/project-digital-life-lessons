@@ -20,11 +20,19 @@ import {
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
-import { toggleSaveLesson, reportLesson } from "@/lib/actions/lessons";
+// Make sure to import toggleLikeLesson here
+import {
+  toggleSaveLesson,
+  reportLesson,
+  toggleLikeLesson,
+} from "@/lib/actions/lessons";
 
 export default function LessonInteractionBar({ lesson }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
+
+  // Safely extract the ID in case MongoDB leaves it as { $oid: "..." }
+  const lessonId = lesson._id.$oid || lesson._id;
 
   const [hasLiked, setHasLiked] = useState(
     user ? (lesson.likes || []).includes(user.id) : false,
@@ -44,8 +52,22 @@ export default function LessonInteractionBar({ lesson }) {
   const handleLike = async () => {
     if (!user) return toast.error("Please log in to like this lesson");
 
-    setHasLiked(!hasLiked);
-    setLikesCount(hasLiked ? likesCount - 1 : likesCount + 1);
+    // 1. Optimistic UI Update
+    const newLikeStatus = !hasLiked;
+    setHasLiked(newLikeStatus);
+    setLikesCount(newLikeStatus ? likesCount + 1 : likesCount - 1);
+
+    // 2. Server Request
+    try {
+      const res = await toggleLikeLesson(lessonId, user.id);
+      console.log(res)
+      if (res.error) throw new Error(res.error);
+    } catch (error) {
+      // 3. Revert on Failure
+      toast.error("Failed to update like status. Reverting.");
+      setHasLiked(!newLikeStatus);
+      setLikesCount(newLikeStatus ? likesCount - 1 : likesCount + 1);
+    }
   };
 
   const handleSave = async () => {
@@ -59,7 +81,7 @@ export default function LessonInteractionBar({ lesson }) {
     );
 
     try {
-      const res = await toggleSaveLesson(lesson._id, user.id);
+      const res = await toggleSaveLesson(lessonId, user.id);
       if (res.error) throw new Error(res.error);
     } catch (error) {
       toast.error("Failed to update database. Reverting.");
@@ -85,7 +107,7 @@ export default function LessonInteractionBar({ lesson }) {
     };
 
     try {
-      const res = await reportLesson(lesson._id, reportData);
+      const res = await reportLesson(lessonId, reportData);
       if (res.error) throw new Error(res.error);
 
       toast.success("Report submitted successfully.");

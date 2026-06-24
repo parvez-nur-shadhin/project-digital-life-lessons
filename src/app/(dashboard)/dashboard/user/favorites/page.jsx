@@ -5,8 +5,8 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { FaBookmark, FaEye, FaHeartBroken, FaSearch } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { getFavorites, removeFavorite } from "@/lib/actions/favorites";
 import Image from "next/image";
+import { getSavedLessons, toggleSaveLesson } from "@/lib/actions/lessons";
 
 export default function MyFavoritesPage() {
   const { data: session, isPending } = authClient.useSession();
@@ -22,13 +22,10 @@ export default function MyFavoritesPage() {
   useEffect(() => {
     const fetchMyFavorites = async () => {
       try {
-        const myFavourites = await getFavorites();
-        console.log(myFavourites);
-        const myFavs = myFavourites.filter(
-          (item) => item.userEmail === user?.email,
-        );
-        const safeFavs = Array.isArray(myFavs) ? myFavs : [];
+        // Fetch only the lessons saved by this specific user
+        const myFavs = await getSavedLessons(user.id);
 
+        const safeFavs = Array.isArray(myFavs) ? myFavs : [];
         setFavorites(safeFavs);
         setFilteredFavorites(safeFavs);
       } catch (error) {
@@ -38,14 +35,12 @@ export default function MyFavoritesPage() {
       }
     };
 
-    if (user) {
+    if (user?.id) {
       fetchMyFavorites();
     } else if (!isPending) {
       setIsLoading(false);
     }
   }, [user, isPending]);
-
-  console.log(favorites);
 
   useEffect(() => {
     let result = favorites;
@@ -63,17 +58,24 @@ export default function MyFavoritesPage() {
   const handleRemoveFavorite = async (id) => {
     const previousFavorites = [...favorites];
 
-    setFavorites(favorites.filter((lesson) => lesson._id !== id));
+    // Optimistically remove from UI
+    setFavorites(
+      favorites.filter((lesson) => {
+        const lessonId = lesson._id.$oid || lesson._id;
+        return lessonId !== id;
+      }),
+    );
     toast.success("Removed from favorites");
 
     try {
-      const res = await removeFavorite(id);
+      // Toggle it to remove it from the database
+      const res = await toggleSaveLesson(id, user.id);
 
       if (res.error) throw new Error(res.error);
     } catch (error) {
       console.error(error);
       toast.error("Failed to remove. Restoring lesson.");
-
+      // Revert if it fails
       setFavorites(previousFavorites);
     }
   };
@@ -156,66 +158,70 @@ export default function MyFavoritesPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredFavorites.map((lesson) => (
-                  <tr key={lesson._id}>
-                    <td>
-                      <div
-                        className="font-bold text-base-content line-clamp-1 max-w-sm"
-                        title={lesson.title}
-                      >
-                        {lesson.title}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="flex flex-col gap-1">
-                        <span className="badge badge-ghost badge-sm">
-                          {lesson.category}
-                        </span>
-                        <span className="text-[10px] uppercase font-bold text-base-content/50">
-                          {lesson.tone}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        {lesson.creatorProfileImage ? (
-                          <Image
-                            src={lesson.creatorProfileImage}
-                            alt="Author"
-                            height={24}
-                            width={24}
-                          />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-primary text-primary-content flex items-center justify-center text-[10px] font-bold">
-                            {lesson.creatorName?.charAt(0) || "U"}
-                          </div>
-                        )}
-                        <span className="text-sm font-medium">
-                          {lesson.creatorName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          href={`/lessons/${lesson._id}`}
-                          className="btn btn-sm btn-square btn-ghost text-primary"
-                          title="Read Lesson"
+                {filteredFavorites.map((lesson) => {
+                  const lessonId = lesson._id.$oid || lesson._id;
+                  return (
+                    <tr key={lessonId}>
+                      <td>
+                        <div
+                          className="font-bold text-base-content line-clamp-1 max-w-sm"
+                          title={lesson.title}
                         >
-                          <FaEye className="text-lg" />
-                        </Link>
+                          {lesson.title}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex flex-col gap-1">
+                          <span className="badge badge-ghost badge-sm">
+                            {lesson.category}
+                          </span>
+                          <span className="text-[10px] uppercase font-bold text-base-content/50">
+                            {lesson.tone}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          {lesson.creatorProfileImage ? (
+                            <Image
+                              src={lesson.creatorProfileImage}
+                              alt="Author"
+                              height={24}
+                              width={24}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-primary text-primary-content flex items-center justify-center text-[10px] font-bold">
+                              {lesson.creatorName?.charAt(0) || "U"}
+                            </div>
+                          )}
+                          <span className="text-sm font-medium">
+                            {lesson.creatorName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/lessons/${lessonId}`}
+                            className="btn btn-sm btn-square btn-ghost text-primary"
+                            title="Read Lesson"
+                          >
+                            <FaEye className="text-lg" />
+                          </Link>
 
-                        <button
-                          onClick={() => handleRemoveFavorite(lesson._id)}
-                          className="btn btn-sm btn-square btn-ghost text-base-content/40 hover:text-error"
-                          title="Remove from favorites"
-                        >
-                          <FaHeartBroken className="text-lg" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <button
+                            onClick={() => handleRemoveFavorite(lessonId)}
+                            className="btn btn-sm btn-square btn-ghost text-base-content/40 hover:text-error"
+                            title="Remove from favorites"
+                          >
+                            <FaHeartBroken className="text-lg" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

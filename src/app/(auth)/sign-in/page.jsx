@@ -4,7 +4,7 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 
 const SignInPage = () => {
   const {
@@ -15,14 +15,14 @@ const SignInPage = () => {
 
   const onSubmit = async (data) => {
     const { data: res, error } = await authClient.signIn.email({
-      email: data.email, 
-      password: data.password, 
+      email: data.email,
+      password: data.password,
       rememberMe: true,
       callbackURL: "/",
     });
 
     if (res) {
-      toast.success("You've signed in successfully");
+      toast.success("Signed In Successfully");
     } else if (error) {
       toast.error(error.message);
     }
@@ -32,7 +32,6 @@ const SignInPage = () => {
     await authClient.signIn.social({
       provider: "google",
     });
-
     if (error) {
       console.error("Google login failed:", error.message);
     }
