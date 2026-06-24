@@ -15,25 +15,39 @@ const SignUpPage = () => {
   } = useForm({
     defaultValues: {
       role: "user",
-      plan: "free"
+      plan: "free",
     },
   });
 
   const onSubmit = async (data) => {
     const { data: res, error } = await authClient.signUp.email({
-      name: data.name, 
-      email: data.email, 
-      password: data.password, 
+      name: data.name,
+      email: data.email,
+      password: data.password,
       image: data.image,
       callbackURL: "/log-in",
     });
 
-    if(res) {
-        toast.success("You've signed Up, redirecting to Login Page");
-        redirect('/sign-in');
+    if (res) {
+      toast.success("You've signed Up, redirecting to Login Page");
+      redirect("/sign-in");
+    } else if (error) {
+      toast.info(error.message);
     }
-    else if(error) {
-        toast.info(error.message);
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard", // Where to redirect after successful login
+        errorCallback: (error) => {
+          toast.error(error.message || "Authentication failed.");
+        },
+      });
+    } catch (error) {
+      console.error("Google Auth Error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -111,7 +125,10 @@ const SignUpPage = () => {
             Sign Up
           </button>
           <h1 className="text-center text-lg font-bold">Or</h1>
-          <button className="btn bg-white text-black border-[#e5e5e5]">
+          <button
+            onClick={handleGoogleSignUp}
+            className="btn bg-white text-black border-[#e5e5e5]"
+          >
             <svg
               aria-label="Google logo"
               width="16"
@@ -139,7 +156,7 @@ const SignUpPage = () => {
                 ></path>
               </g>
             </svg>
-            Sign In with Google
+            Sign Up with Google
           </button>
           <h1 className="mt-4">
             Already Have an Account?{" "}
